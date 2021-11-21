@@ -13,7 +13,7 @@ HaibaraCP 是一个 SFTP 连接池，基于 commons-pool2 和 jsch 实现。
 
 ```xml
 <dependency>
-    <groupId>com.github.hligaty</groupId>
+    <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -50,7 +50,7 @@ sftp:
 
 ## 使用
 
-HaibaraCP 的 SftpTemplate 与 Spring 官方 Starter 为 Redis 提供的 RedisTemplate 使用方法相同，任意方式注入即可使用：
+HaibaraCP 提供 SftpTemplate 类，它与 `spring-boot-starter-data-redis`  提供的 RedisTemplate 使用方法相同，任意方式注入即可使用：
 
 ```java
 @Component
@@ -112,7 +112,7 @@ try (OutputStream outPutStream1 = Files.newOutputStream(Paths.get("D:\\1.txt"));
 
 ### 自定义
 
-`execute(SftpCallback<T> action)` 提供自定义的 SFTP操作，比如通过 SftpClient 的 get 方法获取 channelSftp，再查看 SFTP 默认目录（关于 ChannelSftp 的其他用法请参考 jsch 的 API）：
+`execute(SftpCallback<T> action)` 提供自定义 SFTP 操作，比如查看 SFTP 默认目录（关于 ChannelSftp 的其他用法请参考 jsch 的 API）：
 
 ```java
 String dir = sftpTemplate.execute(sftpClient -> sftpClient.getChannelSftp().pwd());
@@ -122,5 +122,7 @@ String dir = sftpTemplate.execute(sftpClient -> sftpClient.getChannelSftp().pwd(
 
 SftpTemplate 在执行结束后会执行回滚操作，回滚成功就会还原被使用连接的远端目录（但不会还原本地目录），以保证下次使用该连接时是初始连接时的目录。
 
-如果需要其他的回滚操作和问题欢迎提 <a href="https://github.com/hligaty/spring-study/issues"><img src="https://img.shields.io/bitbucket/issues-raw/hligaty/haibaracp-spring-boot-starter"></a>。
+## 其他
+
+如果有问题或前面注意中需要提供其他的回滚操作欢迎提 <a href="https://github.com/hligaty/spring-study/issues"><img src="https://img.shields.io/bitbucket/issues-raw/hligaty/haibaracp-spring-boot-starter"></a>。
 
