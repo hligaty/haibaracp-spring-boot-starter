@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * @author hligaty & haibara
+ * @author hligaty
  */
 public class SftpClient {
   private static final Logger log = LoggerFactory.getLogger(SftpClient.class);

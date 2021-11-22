@@ -3,7 +3,7 @@ package io.github.hligaty.haibaracp.core;
 import org.springframework.lang.Nullable;
 
 /**
- * @author hligaty & haibara
+ * @author hligaty
  */
 @FunctionalInterface
 public interface SftpCallback<T> {

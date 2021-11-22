@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.Map;
 
 /**
- * @author hligaty & haibara
+ * @author hligaty
  */
 @ConfigurationProperties("sftp")
 public class SftpProperties {

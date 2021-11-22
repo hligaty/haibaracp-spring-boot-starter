@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PreDestroy;
 
 /**
- * @author hligaty & haibara
+ * @author hligaty
  */
 public class SftpPool implements ObjectPool<SftpClient> {
   private static final Logger log = LoggerFactory.getLogger(SftpPool.class);

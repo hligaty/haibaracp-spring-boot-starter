@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author hligaty & haibara
+ * @author hligaty
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(SftpProperties.class)
