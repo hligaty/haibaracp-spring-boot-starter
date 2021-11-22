@@ -2,13 +2,13 @@
   "groups": [
     {
       "name": "sftp",
-      "type": "com.github.hligaty.haibaracp.config.SftpProperties",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties"
+      "type": "io.github.hligaty.haibaracp.config.SftpProperties",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties"
     },
     {
       "name": "sftp.pool",
-      "type": "com.github.hligaty.haibaracp.config.SftpProperties$Pool",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties",
+      "type": "io.github.hligaty.haibaracp.config.SftpProperties$Pool",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties",
       "sourceMethod": "getPool()"
     }
   ],
@@ -17,89 +17,89 @@
       "name": "sftp.host",
       "type": "java.lang.String",
       "description": "地址",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties",
       "defaultValue": "localhost"
     },
     {
       "name": "sftp.password",
       "type": "java.lang.String",
       "description": "密码",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties"
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties"
     },
     {
       "name": "sftp.pool.max-active",
       "type": "java.lang.Integer",
       "description": "池可以产生的最大对象数，为负值时表示无限",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties$Pool",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties$Pool",
       "defaultValue": 16
     },
     {
       "name": "sftp.pool.max-idle",
       "type": "java.lang.Integer",
       "description": "池中最大的空闲连接数，为负值时表示无限",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties$Pool",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties$Pool",
       "defaultValue": 8
     },
     {
       "name": "sftp.pool.max-wait",
       "type": "java.lang.Long",
       "description": "当池耗尽时，阻塞的最长时间，为负值时无限等待",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties$Pool",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties$Pool",
       "defaultValue": -1
     },
     {
       "name": "sftp.pool.min-idle",
       "type": "java.lang.Integer",
       "description": "池中最小的连接数，只有当 timeBetweenEvictionRuns 为正时才有效",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties$Pool",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties$Pool",
       "defaultValue": 0
     },
     {
       "name": "sftp.pool.test-on-borrow",
       "type": "java.lang.Boolean",
       "description": "从池中取出对象是是否检测可用",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties$Pool",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties$Pool",
       "defaultValue": true
     },
     {
       "name": "sftp.pool.test-on-return",
       "type": "java.lang.Boolean",
       "description": "将对象返还给池时检测是否可用",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties$Pool",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties$Pool",
       "defaultValue": false
     },
     {
       "name": "sftp.pool.test-while-idle",
       "type": "java.lang.Boolean",
       "description": "检查连接池对象是否可用",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties$Pool",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties$Pool",
       "defaultValue": true
     },
     {
       "name": "sftp.pool.time-between-eviction-runs",
       "type": "java.lang.Long",
       "description": "距离上次空闲线程检测完成多久后再次执行",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties$Pool",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties$Pool",
       "defaultValue": 300000
     },
     {
       "name": "sftp.port",
       "type": "java.lang.Integer",
       "description": "端口号",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties",
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties",
       "defaultValue": 22
     },
     {
       "name": "sftp.session",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Session 参数配置",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties"
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties"
     },
     {
       "name": "sftp.username",
       "type": "java.lang.String",
       "description": "用户名",
-      "sourceType": "com.github.hligaty.haibaracp.config.SftpProperties"
+      "sourceType": "io.github.hligaty.haibaracp.config.SftpProperties"
     }
   ],
   "hints": []

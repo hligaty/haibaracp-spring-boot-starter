@@ -1,6 +1,6 @@
-package com.github.hligaty.haibaracp.core;
+package io.github.hligaty.haibaracp.core;
 
-import com.github.hligaty.haibaracp.config.SftpProperties;
+import io.github.hligaty.haibaracp.config.SftpProperties;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.PooledObject;

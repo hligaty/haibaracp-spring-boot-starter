@@ -1,6 +1,6 @@
-package com.github.hligaty.haibaracp.core;
+package io.github.hligaty.haibaracp.core;
 
-import com.github.hligaty.haibaracp.config.SftpProperties;
+import io.github.hligaty.haibaracp.config.SftpProperties;
 import com.jcraft.jsch.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

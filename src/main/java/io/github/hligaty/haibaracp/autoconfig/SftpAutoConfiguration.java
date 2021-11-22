@@ -1,8 +1,8 @@
-package com.github.hligaty.haibaracp.autoconfig;
+package io.github.hligaty.haibaracp.autoconfig;
 
-import com.github.hligaty.haibaracp.config.SftpProperties;
-import com.github.hligaty.haibaracp.core.SftpPool;
-import com.github.hligaty.haibaracp.core.SftpTemplate;
+import io.github.hligaty.haibaracp.config.SftpProperties;
+import io.github.hligaty.haibaracp.core.SftpPool;
+import io.github.hligaty.haibaracp.core.SftpTemplate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

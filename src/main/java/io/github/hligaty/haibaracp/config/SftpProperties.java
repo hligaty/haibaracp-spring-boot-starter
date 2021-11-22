@@ -1,4 +1,4 @@
-package com.github.hligaty.haibaracp.config;
+package io.github.hligaty.haibaracp.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

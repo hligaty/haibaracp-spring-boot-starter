@@ -1,4 +1,4 @@
-package com.github.hligaty.haibaracp.core;
+package io.github.hligaty.haibaracp.core;
 
 import org.springframework.lang.Nullable;
 
