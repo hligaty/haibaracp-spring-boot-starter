@@ -15,7 +15,7 @@ HaibaraCP 是一个 SFTP 连接池，基于 commons-pool2 和 jsch 实现。
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -124,5 +124,4 @@ SftpTemplate 在执行结束后会执行回滚操作，回滚成功就会还原�
 
 ## 其他
 
-如果有问题或前面注意中需要提供其他的回滚操作欢迎提 <a href="https://github.com/hligaty/spring-study/issues"><img src="https://img.shields.io/bitbucket/issues-raw/hligaty/haibaracp-spring-boot-starter"></a>。
-
+如果有问题或需要 SFTP 连接的其他回滚操作欢迎提 <a href="https://github.com/hligaty/spring-study/issues"><img src="https://img.shields.io/github/issues/hligaty/haibaracp-spring-boot-starter"></a>。
