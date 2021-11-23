@@ -123,6 +123,12 @@ String dir = sftpTemplate.execute(sftpClient -> sftpClient.getChannelSftp().pwd(
 
 SftpTemplate 在执行结束后会执行回滚操作，回滚成功就会还原被使用连接的远端目录（但不会还原本地目录），以保证下次使用该连接时是初始连接时的目录。
 
+## 计划
+
+- 增加多个不同 Host 连接支持。
+- 增加 `SftpTemplate` 功能。
+- 完善 `ChannelSftp` 回滚机制。
+
 ## 其他
 
 如果有问题或需要 SFTP 连接的其他回滚操作欢迎提 <a href="https://github.com/hligaty/spring-study/issues"><img src="https://img.shields.io/github/issues/hligaty/haibaracp-spring-boot-starter"></a>。
