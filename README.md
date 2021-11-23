@@ -16,7 +16,7 @@ HaibaraCP 是一个 SFTP 连接池，基于 commons-pool2 和 jsch 实现。
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
