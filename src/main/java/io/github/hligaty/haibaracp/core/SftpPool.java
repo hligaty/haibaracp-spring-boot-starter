@@ -25,6 +25,7 @@ public class SftpPool implements ObjectPool<SftpClient> {
       public void returnObject(SftpClient sftpClient) {
         if (sftpClient.rollback()) {
           super.returnObject(sftpClient);
+          return;
         }
         try {
           super.invalidateObject(sftpClient);
