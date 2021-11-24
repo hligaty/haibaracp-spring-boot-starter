@@ -71,28 +71,31 @@ public class SftpClient {
    * @throws SftpException 如果检查、进入或创建过程中发生意外
    */
   public final boolean cd(String dir, boolean mkdir) throws SftpException {
-    if (dir.startsWith("/")) {
-      try {
-        channelSftp.cd(dir);
-        return true;
-      } catch (SftpException ignored) {
-      }
+    if (!StringUtils.hasText(dir)) {
+      return true;
     }
-    channelSftp.cd("/");
-    String[] multiDir = dir.split("/");
-    for (String currDir : multiDir) {
-      if (StringUtils.isEmpty(currDir)) {
-        continue;
+    try {
+      channelSftp.cd(dir);
+      return true;
+    } catch (SftpException ignored) {
+      if (dir.startsWith("/")) {
+        channelSftp.cd("/");
       }
-      if (!isDir(currDir)) {
-        if (!mkdir) {
-          return false;
+      String[] multiDir = dir.split("/");
+      for (String currDir : multiDir) {
+        if (!StringUtils.hasText(currDir)) {
+          continue;
         }
-        channelSftp.mkdir(currDir);
+        if (!isDir(currDir)) {
+          if (!mkdir) {
+            return false;
+          }
+          channelSftp.mkdir(currDir);
+        }
+        channelSftp.cd(currDir);
       }
-      channelSftp.cd(currDir);
+      return true;
     }
-    return true;
   }
 
   protected final boolean isDir(String dir) throws SftpException {
