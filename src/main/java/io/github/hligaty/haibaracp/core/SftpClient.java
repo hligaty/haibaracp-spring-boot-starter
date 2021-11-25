@@ -1,10 +1,9 @@
 package io.github.hligaty.haibaracp.core;
 
-import io.github.hligaty.haibaracp.config.SftpProperties;
 import com.jcraft.jsch.*;
+import io.github.hligaty.haibaracp.config.SftpProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +11,8 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * 连接池对象
+ *
  * @author hligaty
  */
 public class SftpClient {
@@ -64,51 +65,8 @@ public class SftpClient {
   }
 
   /**
-   * 进入指定目录，遇到没创建的目录会自动创建。
-   * 如果 dir 是“/”开头，就从根目录开始进入；否则从 pwd 当前目录开始进入。
-   *
-   * @param dir 目录名
-   * @throws SftpException 如果检查、进入或创建过程中发生意外
+   * 释放连接
    */
-  public final boolean cd(String dir, boolean mkdir) throws SftpException {
-    if (!StringUtils.hasText(dir)) {
-      return true;
-    }
-    try {
-      channelSftp.cd(dir);
-      return true;
-    } catch (SftpException ignored) {
-      if (dir.startsWith("/")) {
-        channelSftp.cd("/");
-      }
-      String[] multiDir = dir.split("/");
-      for (String currDir : multiDir) {
-        if (!StringUtils.hasText(currDir)) {
-          continue;
-        }
-        if (!isDir(currDir)) {
-          if (!mkdir) {
-            return false;
-          }
-          channelSftp.mkdir(currDir);
-        }
-        channelSftp.cd(currDir);
-      }
-      return true;
-    }
-  }
-
-  protected final boolean isDir(String dir) throws SftpException {
-    try {
-      return channelSftp.lstat(dir).isDir();
-    } catch (SftpException e) {
-      if ("No such file".equals(e.getMessage())) {
-        return false;
-      }
-      throw e;
-    }
-  }
-
   protected final void disconnect() {
     if (channelSftp != null) {
       try {
@@ -125,10 +83,15 @@ public class SftpClient {
       }
     }
     if (log.isDebugEnabled()) {
-      log.debug("{}: Is Closed.", clientInfo);
+      log.debug("{}: Close client.", clientInfo);
     }
   }
 
+  /**
+   * 验证连接是否可用。与 {@link #rollback} 相照应。
+   *
+   * @return 连接是否可用
+   */
   protected boolean validateConnect() {
     try {
       boolean result = session.isConnected() && channelSftp.isConnected() && originalDir.equals(channelSftp.pwd());
@@ -138,12 +101,17 @@ public class SftpClient {
       return result;
     } catch (Exception e) {
       if (log.isDebugEnabled()) {
-        log.debug("{}: Failed to validate sftpClient.", clientInfo, e);
+        log.debug("{}: Failed to validate client.", clientInfo, e);
       }
       return false;
     }
   }
 
+  /**
+   * 回滚 SFTP 连接到初始状态。与 {@link #validateConnect} 相照应。
+   *
+   * @return 是否成功回滚到初始连接状态
+   */
   protected boolean rollback() {
     try {
       channelSftp.cd(originalDir);

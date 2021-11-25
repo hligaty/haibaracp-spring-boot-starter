@@ -85,7 +85,7 @@ try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\1.txt"));
 }
 ```
 
-`upload(InputStream from, String to)` 方法首先根据 to 逐级检查目录（如果是目录格式），目录不存在就会创建，直到进入上传的目的地目录，最后上传 from 文件，另外有 `upload(InputStream from, String to, int mode)` 可选。
+`upload(InputStream from, String to)` 方法首先根据 to 逐级检查目录（如果是目录格式），目录不存在就会创建，直到进入上传的目的地目录，最后上传 from 文件。
 
 方法不会主动关闭流，请手动关闭。
 
@@ -116,7 +116,7 @@ try (OutputStream outPutStream1 = Files.newOutputStream(Paths.get("D:\\1.txt"));
 `execute(SftpCallback<T> action)` 提供自定义 SFTP 操作，比如查看 SFTP 默认目录（关于 ChannelSftp 的其他用法请参考 jsch 的 API）：
 
 ```java
-String dir = sftpTemplate.execute(sftpClient -> sftpClient.getChannelSftp().pwd());
+String dir = sftpTemplate.execute(ChannelSftp::pwd);
 ```
 
 ### 注意
@@ -125,7 +125,7 @@ SftpTemplate 在执行结束后会执行回滚操作，回滚成功就会还原�
 
 ## 计划
 
-- 增加多个不同 Host 连接支持。
+- 支持多个不同 Host 连接。
 - 增加 `SftpTemplate` 功能。
 - 完善 `ChannelSftp` 回滚机制。
 

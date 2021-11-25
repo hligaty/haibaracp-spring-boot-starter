@@ -5,10 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * @author gaodapeng
+ */
 public class SftpTemplate {
   private static final Logger log = LoggerFactory.getLogger(SftpTemplate.class);
   private final SftpPool sftpPool;
@@ -17,6 +19,14 @@ public class SftpTemplate {
     this.sftpPool = sftpPool;
   }
 
+  /**
+   * 执行指定的 SFTP 操作。
+   *
+   * @param action 指定的 SFTP 操作
+   * @param <T> 指定的返回值类型
+   * @return 指定的返回值，可以为空
+   * @throws Exception 操作 channelsSftp 抛出的 SftpException 或者其他的 Exception
+   */
   public <T> T execute(SftpCallback<T> action) throws Exception {
     Assert.notNull(action, "Callback object must not be null");
     SftpClient sftpClient = null;
@@ -25,10 +35,8 @@ public class SftpTemplate {
       if (log.isDebugEnabled()) {
         log.debug("{}: Get client.", sftpClient.getClientInfo());
       }
-      return action.doInSftp(sftpClient);
-    } catch (FileNotFoundException e) {
-      throw e;
-    } catch (Exception e) {
+      return action.doInSftp(sftpClient.getChannelSftp());
+    } catch (SftpException e) {
       if (log.isDebugEnabled() && sftpClient != null) {
         log.debug("{}: Invalidate client.", sftpClient.getClientInfo());
       }
@@ -38,7 +46,7 @@ public class SftpTemplate {
     } finally {
       if (null != sftpClient) {
         if (log.isDebugEnabled()) {
-          log.debug("{}: Return vlient.", sftpClient.getClientInfo());
+          log.debug("{}: Return client.", sftpClient.getClientInfo());
         }
         sftpPool.returnObject(sftpClient);
       }
@@ -53,48 +61,17 @@ public class SftpTemplate {
    * @throws Exception 目录、文件不存在或下载时出现意外
    */
   public void download(String from, OutputStream to) throws Exception {
-    this.<Void>execute(sftpClient -> {
-      if (sftpClient.cd(from.substring(0, from.lastIndexOf("/") + 1), false)) {
-        try {
-          sftpClient.getChannelSftp().get(from.substring(from.lastIndexOf("/") + 1), to);
-        } catch (SftpException e) {
-          if (e.id == 2) {
-            throw new FileNotFoundException(from);
-          }
-          throw e;
-        }
-        return null;
-      }
-      throw new FileNotFoundException(from);
-    });
+    this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).download(from, to));
   }
 
   /**
-   * 上传 inputStream 到 dir，目录不存在时自动创建
+   * 上传 inputStream 到 dir。目录不存在时自动创建，支持相对路径和绝对路径
    *
    * @param from 输入文件流
    * @param to   文件全路径
    * @throws SftpException 上传或切换目录时出现意外
    */
   public void upload(InputStream from, String to) throws Exception {
-    upload(from, to, 0);
-  }
-
-  /**
-   * 上传 inputStream 到 dir
-   *
-   * @param from 输入文件流
-   * @param to   文件全路径
-   * @param mode 模式
-   * @throws SftpException 上传或切换目录时出现意外
-   */
-  public void upload(InputStream from, String to, int mode) throws Exception {
-    this.<Void>execute(sftpClient -> {
-      if (sftpClient.cd(to.substring(0, to.lastIndexOf("/") + 1), true)) {
-        sftpClient.getChannelSftp().put(from, to.substring(to.lastIndexOf("/") + 1), mode);
-        return null;
-      }
-      throw new FileNotFoundException(to);
-    });
+    this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).upload(from, to));
   }
 }
