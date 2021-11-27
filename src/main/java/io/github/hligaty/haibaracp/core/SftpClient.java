@@ -4,10 +4,10 @@ import com.jcraft.jsch.*;
 import io.github.hligaty.haibaracp.config.SftpProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -44,12 +44,17 @@ public class SftpClient {
     try {
       JSch jsch = new JSch();
       session = jsch.getSession(sftpProperties.getUsername(), sftpProperties.getHost(), sftpProperties.getPort());
-      session.setPassword(sftpProperties.getPassword());
-      Properties config = new Properties();
-      if (sftpProperties.getSession() != null) {
-        sftpProperties.getSession().forEach(config::put);
+      if (sftpProperties.isStrictHostKeyChecking()) {
+        session.setConfig("StrictHostKeyChecking", "ask");
+        session.setUserInfo(new UserInfoImpl(sftpProperties.getPassword()));
+        jsch.addIdentity(sftpProperties.getKeyPath());
+      } else {
+        session.setConfig("StrictHostKeyChecking", "no");
+        session.setPassword(sftpProperties.getPassword());
       }
-      session.setConfig(config);
+      if (StringUtils.hasText(sftpProperties.getKex())) {
+        session.setConfig("kex", sftpProperties.getKex());
+      }
       session.connect();
       channelSftp = (ChannelSftp) session.openChannel("sftp");
       channelSftp.connect();

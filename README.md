@@ -16,7 +16,7 @@ HaibaraCP 是一个 SFTP 连接池，基于 commons-pool2 和 jsch 实现。
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -29,15 +29,36 @@ HaibaraCP 是一个 SFTP 连接池，基于 commons-pool2 和 jsch 实现。
 
 ## 配置
 
+### 密码登录
+
 ```yml
 sftp:
-  host: 127.0.0.1
+  host: localhost
   port: 22
   username: root
-  password: '123456'
-  session:
-    StrictHostKeyChecking: no
-    kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
+  password: 123456
+  kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
+```
+### 密钥登录
+
+```yml
+sftp:
+  host: localhost
+  port: 22
+  username: root
+  #验证秘钥
+  strict-host-key-checking: true
+  #秘钥位置
+  key-path: C:\\Users\\user\\.ssh\\id_rsa
+  #秘钥密码，无密码可以不写
+  password: Jui8cv@kK9!0
+  kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
+```
+
+### 线程池配置
+
+```yml
+sftp:
   pool:
     max-idle: 8
     min-idle: 1
@@ -46,7 +67,7 @@ sftp:
     test-on-borrow: true
     test-on-return: false
     test-while-idle: true
-    time-between-eviction-runs: 120000
+    time-between-eviction-runs: 300000
 ```
 
 ## 使用
@@ -56,11 +77,14 @@ HaibaraCP 提供 SftpTemplate 类，它与 `spring-boot-starter-data-redis`  提
 ```java
 @Component
 public class XXXService {
-  @Autowired
-  private SftpTemplate sftpTemplate;
+  private final SftpTemplate sftpTemplate;
 
-  void service() {
-    //sftpTemplate........
+  public XXXService(SftpTemplate sftpTemplate) {
+    this.sftpTemplate = sftpTemplate;
+  }
+
+  public void service(String from, OutputStream to) throws Exception {
+    sftpTemplate.download(from, to);
   }
 }
 ```
@@ -127,8 +151,11 @@ SftpTemplate 在执行结束后会执行回滚操作，回滚成功就会还原�
 
 - 支持多个不同 Host 连接。
 - 增加 `SftpTemplate` 功能。
-- 完善 `ChannelSftp` 回滚机制。
+
+## 问题
+
+- JSchException: invalid privatekey：https://github.com/mwiede/jsch/issues/12#issuecomment-662863338
 
 ## 其他
 
-如果有问题或需要 SFTP 连接的其他回滚操作欢迎提 <a href="https://github.com/hligaty/spring-study/issues"><img src="https://img.shields.io/github/issues/hligaty/haibaracp-spring-boot-starter"></a>。
+有问题欢迎提 <a href="https://github.com/hligaty/spring-study/issues"><img src="https://img.shields.io/github/issues/hligaty/haibaracp-spring-boot-starter"></a>。

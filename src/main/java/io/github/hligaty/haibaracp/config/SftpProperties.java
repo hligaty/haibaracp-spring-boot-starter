@@ -2,7 +2,7 @@ package io.github.hligaty.haibaracp.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Map;
+import java.util.StringJoiner;
 
 /**
  * @author hligaty
@@ -22,13 +22,22 @@ public class SftpProperties {
    */
   private String username;
   /**
-   * 密码
+   * 验证私钥
    */
-  private String password;
+  private boolean strictHostKeyChecking = false;
   /**
-   * Session 参数配置
+   * 私钥路径
    */
-  private Map<String, String> session;
+  private String keyPath;
+  /**
+   * 密码或私钥密码
+   */
+  private String password = "";
+  /**
+   * 算法
+   */
+  private String kex;
+
   /**
    * 连接池配置
    */
@@ -144,16 +153,16 @@ public class SftpProperties {
 
     @Override
     public String toString() {
-      return "Pool{" +
-        "minIdle=" + minIdle +
-        ", maxIdle=" + maxIdle +
-        ", maxActive=" + maxActive +
-        ", maxWait=" + maxWait +
-        ", testOnBorrow=" + testOnBorrow +
-        ", testOnReturn=" + testOnReturn +
-        ", testWhileIdle=" + testWhileIdle +
-        ", timeBetweenEvictionRuns=" + timeBetweenEvictionRuns +
-        '}';
+      return new StringJoiner(", ", Pool.class.getSimpleName() + "[", "]")
+        .add("minIdle=" + minIdle)
+        .add("maxIdle=" + maxIdle)
+        .add("maxActive=" + maxActive)
+        .add("maxWait=" + maxWait)
+        .add("testOnBorrow=" + testOnBorrow)
+        .add("testOnReturn=" + testOnReturn)
+        .add("testWhileIdle=" + testWhileIdle)
+        .add("timeBetweenEvictionRuns=" + timeBetweenEvictionRuns)
+        .toString();
     }
   }
 
@@ -181,6 +190,22 @@ public class SftpProperties {
     this.username = username;
   }
 
+  public boolean isStrictHostKeyChecking() {
+    return strictHostKeyChecking;
+  }
+
+  public void setStrictHostKeyChecking(boolean strictHostKeyChecking) {
+    this.strictHostKeyChecking = strictHostKeyChecking;
+  }
+
+  public String getKeyPath() {
+    return keyPath;
+  }
+
+  public void setKeyPath(String keyPath) {
+    this.keyPath = keyPath;
+  }
+
   public String getPassword() {
     return password;
   }
@@ -189,12 +214,12 @@ public class SftpProperties {
     this.password = password;
   }
 
-  public Map<String, String> getSession() {
-    return session;
+  public String getKex() {
+    return kex;
   }
 
-  public void setSession(Map<String, String> session) {
-    this.session = session;
+  public void setKex(String kex) {
+    this.kex = kex;
   }
 
   public Pool getPool() {
@@ -207,13 +232,15 @@ public class SftpProperties {
 
   @Override
   public String toString() {
-    return "SftpProperties{" +
-      "host='" + host + '\'' +
-      ", port=" + port +
-      ", username='" + username + '\'' +
-      ", password='" + password + '\'' +
-      ", session=" + session +
-      ", pool=" + pool +
-      '}';
+    return new StringJoiner(", ", SftpProperties.class.getSimpleName() + "[", "]")
+      .add("host='" + host + "'")
+      .add("port=" + port)
+      .add("username='" + username + "'")
+      .add("strictHostKeyChecking=" + strictHostKeyChecking)
+      .add("keyPath='" + keyPath + "'")
+      .add("password='" + password + "'")
+      .add("kex='" + kex + "'")
+      .add("pool=" + pool)
+      .toString();
   }
 }
