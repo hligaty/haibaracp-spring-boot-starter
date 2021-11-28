@@ -6,9 +6,12 @@
 <a href="https://github.com/hligaty/haibaracp-spring-boot-starter/stargazers"><img src="https://img.shields.io/github/stars/hligaty/haibaracp-spring-boot-starter"></a>
 <a href="https://github.com/hligaty/haibaracp-spring-boot-starter/network/members"><img src="https://img.shields.io/github/forks/hligaty/haibaracp-spring-boot-starter"></a>
 </p>
-> Github：[hligaty/haibaracp-spring-boot-starter: SFTP Connect Pool (github.com)](https://github.com/hligaty/haibaracp-spring-boot-starter) 
->
-> Gitee：[haibaracp-spring-boot-starter: SFTP Connect Pool (gitee.com)](https://gitee.com/hligy/haibaracp-spring-boot-starter)
+
+> **Github：[hligaty/haibaracp-spring-boot-starter: SFTP Connect Pool (github.com)](https://github.com/hligaty/haibaracp-spring-boot-starter)**
+
+> **Gitee：[haibaracp-spring-boot-starter: SFTP Connect Pool (gitee.com)](https://gitee.com/hligy/haibaracp-spring-boot-starter)**
+
+> **欢迎使用和Star支持，如使用过程中碰到问题，可以提出Issue，我会尽力完善**
 
 ## 介绍
 
@@ -156,11 +159,7 @@ SftpTemplate 在执行结束后会执行回滚操作，回滚成功就会还原�
 - 支持多个不同 Host 连接。
 - 增加 `SftpTemplate` 功能。
 
-## 问题
+## 常见问题
 
 - JSchException: invalid privatekey：https://github.com/mwiede/jsch/issues/12#issuecomment-662863338
-
-## 其他
-
-有问题欢迎提 <a href="https://github.com/hligaty/spring-study/issues"><img src="https://img.shields.io/github/issues/hligaty/haibaracp-spring-boot-starter"></a>。
 
