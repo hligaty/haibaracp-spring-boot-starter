@@ -6,11 +6,15 @@
 <a href="https://github.com/hligaty/haibaracp-spring-boot-starter/stargazers"><img src="https://img.shields.io/github/stars/hligaty/haibaracp-spring-boot-starter"></a>
 <a href="https://github.com/hligaty/haibaracp-spring-boot-starter/network/members"><img src="https://img.shields.io/github/forks/hligaty/haibaracp-spring-boot-starter"></a>
 </p>
+> Github：[hligaty/haibaracp-spring-boot-starter: SFTP Connect Pool (github.com)](https://github.com/hligaty/haibaracp-spring-boot-starter) 
+>
+> Gitee：[haibaracp-spring-boot-starter: SFTP Connect Pool (gitee.com)](https://gitee.com/hligy/haibaracp-spring-boot-starter)
 
 ## 介绍
+
 HaibaraCP 是一个 SFTP 连接池，基于 commons-pool2 和 jsch 实现。
 
-## Maven repository
+## Maven 依赖
 
 ```xml
 <dependency>
@@ -55,7 +59,7 @@ sftp:
   kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
 ```
 
-### 线程池配置
+### 连接池配置
 
 ```yml
 sftp:
@@ -159,3 +163,4 @@ SftpTemplate 在执行结束后会执行回滚操作，回滚成功就会还原�
 ## 其他
 
 有问题欢迎提 <a href="https://github.com/hligaty/spring-study/issues"><img src="https://img.shields.io/github/issues/hligaty/haibaracp-spring-boot-starter"></a>。
+
