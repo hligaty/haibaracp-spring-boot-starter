@@ -44,12 +44,13 @@ public class SftpTemplate {
       sftpClient = null;
       throw e;
     } finally {
-      if (null != sftpClient) {
+      if (sftpClient != null) {
         if (log.isDebugEnabled()) {
           log.debug("{}: Return client.", sftpClient.getClientInfo());
         }
         sftpPool.returnObject(sftpClient);
       }
+      HostHolder.clear();
     }
   }
 

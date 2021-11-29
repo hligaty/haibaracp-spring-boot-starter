@@ -15,7 +15,7 @@
 
 ## 介绍
 
-HaibaraCP 是一个 SFTP 连接池，基于 commons-pool2 和 jsch 实现。
+HaibaraCP 是一个 SFTP 连接池，基于 commons-pool2 和 jsch 实现。SSH 连接数是有限的，10 个以外的连接将有 30 % 的概率连接失败，当超过 100 个连接时将拒绝新连接，因此要避免频繁创建连接。 
 
 ## Maven 依赖
 
@@ -69,8 +69,8 @@ sftp:
   pool:
     max-idle: 8
     min-idle: 1
-    max-active: 16
-    max-wait: 150000
+    max-active: 8
+    max-wait: -1
     test-on-borrow: true
     test-on-return: false
     test-while-idle: true

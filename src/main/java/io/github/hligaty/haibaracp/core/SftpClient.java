@@ -1,13 +1,14 @@
 package io.github.hligaty.haibaracp.core;
 
 import com.jcraft.jsch.*;
-import io.github.hligaty.haibaracp.config.SftpProperties;
+import io.github.hligaty.haibaracp.config.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -40,20 +41,20 @@ public class SftpClient {
     return clientInfo;
   }
 
-  public SftpClient(SftpProperties sftpProperties) throws SftpException, JSchException {
+  public SftpClient(ClientProperties clientProperties) throws SftpException, JSchException {
     try {
       JSch jsch = new JSch();
-      session = jsch.getSession(sftpProperties.getUsername(), sftpProperties.getHost(), sftpProperties.getPort());
-      if (sftpProperties.isStrictHostKeyChecking()) {
+      session = jsch.getSession(clientProperties.getUsername(), clientProperties.getHost(), clientProperties.getPort());
+      if (clientProperties.isStrictHostKeyChecking()) {
         session.setConfig("StrictHostKeyChecking", "ask");
-        session.setUserInfo(new UserInfoImpl(sftpProperties.getPassword()));
-        jsch.addIdentity(sftpProperties.getKeyPath());
+        session.setUserInfo(new UserInfoImpl(clientProperties.getPassword()));
+        jsch.addIdentity(clientProperties.getKeyPath());
       } else {
         session.setConfig("StrictHostKeyChecking", "no");
-        session.setPassword(sftpProperties.getPassword());
+        session.setPassword(clientProperties.getPassword());
       }
-      if (StringUtils.hasText(sftpProperties.getKex())) {
-        session.setConfig("kex", sftpProperties.getKex());
+      if (StringUtils.hasText(clientProperties.getKex())) {
+        session.setConfig("kex", clientProperties.getKex());
       }
       session.connect();
       channelSftp = (ChannelSftp) session.openChannel("sftp");
@@ -125,5 +126,13 @@ public class SftpClient {
       log.debug("{}: Failed to cd during return", clientInfo);
     }
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", SftpClient.class.getSimpleName() + "[", "]")
+            .add("clientInfo='" + clientInfo + "'")
+            .add("originalDir='" + originalDir + "'")
+            .toString();
   }
 }
