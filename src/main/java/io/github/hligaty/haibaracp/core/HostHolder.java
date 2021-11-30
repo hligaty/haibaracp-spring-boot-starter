@@ -5,6 +5,8 @@ import io.github.hligaty.haibaracp.config.ClientProperties;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * 切换 host
@@ -31,6 +33,19 @@ public class HostHolder {
       throw new NullPointerException("Not multiple hosts");
     }
     return hostKeys;
+  }
+
+  /**
+   * 过滤出指定的 hostkeys
+   *
+   * @param predicate hostkey 命名规则
+   * @return hostkeys
+   */
+  public static Set<String> hostKeys(Predicate<String> predicate) {
+    if (hostKeys == null) {
+      throw new NullPointerException("Not multiple hosts");
+    }
+    return hostKeys.stream().filter(predicate).collect(Collectors.toSet());
   }
 
   /**

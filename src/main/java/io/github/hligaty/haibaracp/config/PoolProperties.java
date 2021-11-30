@@ -47,10 +47,10 @@ public class PoolProperties {
   /**
    * 距离上次空闲线程检测完成多久后再次执行
    */
-  private long timeBetweenEvictionRuns = 300000L;
+  private long timeBetweenEvictionRuns = 1000L * 60L * 10L;
 
   /**
-   * 超过 minIdle 小于 maxTotal 的最大连接数
+   * 超过 minIdle 小于 maxTotal 的连接最小空闲时间，超过将被逐出连接池
    */
   private long minEvictableIdleTimeMillis = 1000L * 60L * 30L;
 

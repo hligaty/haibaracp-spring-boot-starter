@@ -45,10 +45,15 @@ public class SftpTemplate {
       throw e;
     } finally {
       if (sftpClient != null) {
-        if (log.isDebugEnabled()) {
-          log.debug("{}: Return client.", sftpClient.getClientInfo());
+        boolean rollback = sftpClient.rollback();
+        if (rollback) {
+          sftpPool.returnObject(sftpClient);
+        } else {
+          sftpPool.invalidateObject(sftpClient);
         }
-        sftpPool.returnObject(sftpClient);
+        if (log.isDebugEnabled()) {
+          log.debug(rollback ? "{}: Return client." : "{}: Invalidate client.", sftpClient.getClientInfo());
+        }
       }
       HostHolder.clear();
     }

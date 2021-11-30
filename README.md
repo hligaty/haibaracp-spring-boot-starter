@@ -15,7 +15,7 @@
 
 ## 介绍
 
-HaibaraCP 是一个 SFTP 连接池，基于 commons-pool2 和 jsch 实现。SSH 连接数是有限的，10 个以外的连接将有 30 % 的概率连接失败，当超过 100 个连接时将拒绝新连接，因此要避免频繁创建连接。 
+HaibaraCP 是一个 SFTP 连接池，SFTP 通过 SSH 建立连接，而 SSH 连接数默认是有限的，10 个以外的连接将有 30 % 的概率连接失败，当超过 100 个连接时将拒绝创建新连接，因此要避免频繁创建新连接。 
 
 ## Maven 依赖
 
@@ -23,7 +23,7 @@ HaibaraCP 是一个 SFTP 连接池，基于 commons-pool2 和 jsch 实现。SSH 
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -35,6 +35,8 @@ HaibaraCP 是一个 SFTP 连接池，基于 commons-pool2 和 jsch 实现。SSH 
 和 `spring-boot-starter-data-redis` 一样，需要手动引入 `commons-pool2` 依赖。
 
 ## 配置
+
+详细的配置属性说明见开发工具的自动提示。
 
 ### 密码登录
 
@@ -53,28 +55,68 @@ sftp:
   host: localhost
   port: 22
   username: root
-  #验证秘钥
   strict-host-key-checking: true
-  #秘钥位置
   key-path: C:\\Users\\user\\.ssh\\id_rsa
-  #秘钥密码，无密码可以不写
   password: Jui8cv@kK9!0
   kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
 ```
 
-### 连接池配置
+### 多 Host
+
+比如两个 Host，一个密码登录，一个密钥登录：
+
+```
+sftp:
+  hosts:
+  	remote-1:
+      host: 220.181.38.251
+      port: 22
+      username: root
+      password: 123456
+      kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
+    local-1:
+      host: 127.0.0.1
+      port: 22
+      username: root
+      strict-host-key-checking: true
+      key-path: C:\\Users\\user\\.ssh\\id_rsa
+      password: Jui8cv@kK9!0
+      kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
+```
+
+### 连接池（可以不配置）
+
+单 Host 连接池配置：
 
 ```yml
 sftp:
   pool:
-    max-idle: 8
-    min-idle: 1
+  	min-idle: 1
+    max-idle: 4
     max-active: 8
     max-wait: -1
     test-on-borrow: true
     test-on-return: false
     test-while-idle: true
-    time-between-eviction-runs: 300000
+    time-between-eviction-runs: 600000
+    min-evictable-idle-time-millis: 1800000
+```
+
+多 Host 连接池配置：
+
+```yml
+sftp:
+  pool:
+    min-idle-per-key: 1
+    max-idle-per-key: 4
+    max-active-per-key: 8
+    max-active: 16
+    max-wait: -1
+    test-on-borrow: true
+    test-on-return: false
+    test-while-idle: true
+    time-between-eviction-runs: 600000
+    min-evictable-idle-time-millis: 1800000
 ```
 
 ## 使用
@@ -150,13 +192,50 @@ try (OutputStream outPutStream1 = Files.newOutputStream(Paths.get("D:\\1.txt"));
 String dir = sftpTemplate.execute(ChannelSftp::pwd);
 ```
 
-### 注意
+###  多 Host
 
-SftpTemplate 在执行结束后会执行回滚操作，回滚成功就会还原被使用连接的远端目录（但不会还原本地目录），以保证下次使用该连接时是初始连接时的目录。
+在多 Host 使用  SftpTemplate 需要为 HaibaraCP 指定使用连接的 hostkey（即配置文件 sftp.hosts 下 map 中的 key），否则将抛出 `NullPointerException`，下面描述了如何指定 hostkey（下面的说明将采用 `配置-多Host` 章节中的配置进行说明）。
+
+- `HostHolder.changeHost(string)` ：通过 hostkey 设置下次使用的连接。注意它只能指定下一次的连接！！！
+
+```
+HostHolder.changeHost("remote-1");
+// 成功打印 remote-1 对应连接的原始目录
+sftpTemplate.execute(ChannelSftp::pwd);
+// 第二次执行失败，抛出空指针
+sftpTemplate.execute(ChannelSftp::pwd);
+```
+
+- `HostHolder.changeHost(string, boolean)`：连续调用相同 hostkey 的 连接时使用，避免执行一次 SftpTemplate 就要设置一次 hostkey。注意要配合 `HostHolder.clearHostKey()` 使用！！！
+
+```java
+// 手动清除 hostkey
+HostHolder.changeHost("remote-1", false);
+try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\1.txt"));
+     InputStream inputStream2 = Files.newInputStream(Paths.get("D:\\2.txt"));
+     InputStream inputStream3 = Files.newInputStream(Paths.get("D:\\3.txt"))) {
+  sftpTemplate.upload(inputStream1, "/home/gaodapeng/1.txt");
+  sftpTemplate.upload(inputStream2, "2.txt");
+  sftpTemplate.upload(inputStream3, "gaodapeng/3/3.txt");
+} finally {
+  HostHolder.clearHostKey();
+}
+```
+
+-  `HostHolder.hostKeys()` 和 `HostHolder.hostKeys(Predicate<String>)`：获取所有或过滤后的 hostkey。前面介绍的两种切换 hostkey 的方式都要显示指定 hostkey，但有时需要批量执行配置的 n 个 host，此时可以通过该方法获取所有或过滤后的 hostkeys 集合。
+
+```java
+// 获取所有以“remote-”开头的 hostkey
+for (String hostKey : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
+  HostHolder.changeHost(hostKey);
+  try (InputStream inputStream1 = Files.newInputStream(Paths.get("Paths.get("D:\\1.txt")"))) {
+    sftpTemplate.upload(inputStream1, "/home/gaodapeng/1.txt");
+  }
+}
+```
 
 ## 计划
 
-- 支持多个不同 Host 连接。
 - 增加 `SftpTemplate` 功能。
 
 ## 常见问题

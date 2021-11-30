@@ -45,17 +45,10 @@ public class SftpPool {
   }
 
   public void returnObject(SftpClient sftpClient) {
-    if (sftpClient.rollback()) {
-      if (uniqueHost) {
-        internalPool.returnObject(sftpClient);
-      } else {
-        internalKeyedPool.returnObject(HostHolder.getHostKey(), sftpClient);
-      }
-      return;
-    }
-    try {
-      invalidateObject(sftpClient);
-    } catch (Exception ignored) {
+    if (uniqueHost) {
+      internalPool.returnObject(sftpClient);
+    } else {
+      internalKeyedPool.returnObject(HostHolder.getHostKey(), sftpClient);
     }
   }
 
@@ -107,7 +100,6 @@ public class SftpPool {
       this.clientPropertiesMap = clientPropertiesMap;
     }
 
-
     @Override
     public SftpClient create(String key) throws Exception {
       return new SftpClient(clientPropertiesMap.get(key));
@@ -130,33 +122,31 @@ public class SftpPool {
   }
 
   private GenericObjectPoolConfig<SftpClient> getPoolConfig(PoolProperties poolProperties) {
-    GenericObjectPoolConfig<SftpClient> config = new GenericObjectPoolConfig<>();
+    GenericObjectPoolConfig<SftpClient> config = commonPoolConfig(new GenericObjectPoolConfig<>(), poolProperties);
     config.setMinIdle(poolProperties.getMinIdle());
     config.setMaxIdle(poolProperties.getMaxIdle());
     config.setMaxTotal(poolProperties.getMaxActive());
-    config.setMaxWaitMillis(poolProperties.getMaxWait());
-    config.setTestOnBorrow(poolProperties.isTestOnBorrow());
-    config.setTestOnReturn(poolProperties.isTestOnReturn());
-    config.setTestWhileIdle(poolProperties.isTestWhileIdle());
-    config.setTimeBetweenEvictionRunsMillis(poolProperties.getTimeBetweenEvictionRuns());
-    config.setMinEvictableIdleTimeMillis(poolProperties.getMinEvictableIdleTimeMillis());
     log.info("HaibaraCP :" + poolProperties);
     return config;
   }
 
   private GenericKeyedObjectPoolConfig<SftpClient> getKeyedPoolConfig(PoolProperties poolProperties) {
-    GenericKeyedObjectPoolConfig<SftpClient> config = new GenericKeyedObjectPoolConfig<>();
+    GenericKeyedObjectPoolConfig<SftpClient> config = commonPoolConfig(new GenericKeyedObjectPoolConfig<>(), poolProperties);
     config.setMinIdlePerKey(poolProperties.getMinIdle());
     config.setMaxIdlePerKey(poolProperties.getMaxIdle());
     config.setMaxTotalPerKey(poolProperties.getMaxActivePerKey());
     config.setMaxTotal(poolProperties.getMaxActive());
+    log.info("HaibaraCP :" + poolProperties);
+    return config;
+  }
+
+  private <T extends BaseObjectPoolConfig<SftpClient>> T commonPoolConfig(T config, PoolProperties poolProperties) {
     config.setMaxWaitMillis(poolProperties.getMaxWait());
     config.setTestOnBorrow(poolProperties.isTestOnBorrow());
     config.setTestOnReturn(poolProperties.isTestOnReturn());
     config.setTestWhileIdle(poolProperties.isTestWhileIdle());
     config.setTimeBetweenEvictionRunsMillis(poolProperties.getTimeBetweenEvictionRuns());
     config.setMinEvictableIdleTimeMillis(poolProperties.getMinEvictableIdleTimeMillis());
-    log.info("HaibaraCP :" + poolProperties);
     return config;
   }
 }
