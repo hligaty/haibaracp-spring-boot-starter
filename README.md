@@ -69,7 +69,7 @@ sftp:
 sftp:
   hosts:
   	remote-1:
-      host: 220.181.38.251
+      host: 127.0.0.1
       port: 22
       username: root
       password: 123456
@@ -170,7 +170,7 @@ try (OutputStream outPutStream1 = Files.newOutputStream(Paths.get("D:\\1.txt"));
          OutputStream outPutStream2 = Files.newOutputStream(Paths.get("D:\\2.txt"));
          OutputStream outPutStream3 = Files.newOutputStream(Paths.get("D:\\3.txt"))) {
   // 下载 /home/chongci/1.txt 到 D:\\1.txt
-  sftpTemplate.download("/home/chongci/1.txt", outPutStream1);
+  sftpTemplate.download("/home/haibara/1.txt", outPutStream1);
   
   // 下载 /root/haibara/2.txt 到 D:\\1.txt
   sftpTemplate.download("haibara/2.txt", outPutStream2);
@@ -214,9 +214,9 @@ HostHolder.changeHost("remote-1", false);
 try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\1.txt"));
      InputStream inputStream2 = Files.newInputStream(Paths.get("D:\\2.txt"));
      InputStream inputStream3 = Files.newInputStream(Paths.get("D:\\3.txt"))) {
-  sftpTemplate.upload(inputStream1, "/home/gaodapeng/1.txt");
-  sftpTemplate.upload(inputStream2, "2.txt");
-  sftpTemplate.upload(inputStream3, "gaodapeng/3/3.txt");
+  sftpTemplate.upload(inputStream1, "/home/haibara/1.txt");
+  sftpTemplate.upload(inputStream2, "haibara/2.txt");
+  sftpTemplate.upload(inputStream3, "3.txt");
 } finally {
   HostHolder.clearHostKey();
 }
@@ -228,8 +228,8 @@ try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\1.txt"));
 // 获取所有以“remote-”开头的 hostkey
 for (String hostKey : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
   HostHolder.changeHost(hostKey);
-  try (InputStream inputStream1 = Files.newInputStream(Paths.get("Paths.get("D:\\1.txt")"))) {
-    sftpTemplate.upload(inputStream1, "/home/gaodapeng/1.txt");
+  try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\1.txt"))) {
+    sftpTemplate.upload(inputStream1, "/home/haibara/1.txt");
   }
 }
 ```
