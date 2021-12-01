@@ -91,7 +91,7 @@ sftp:
 ```yml
 sftp:
   pool:
-  	min-idle: 1
+    min-idle: 1
     max-idle: 4
     max-active: 8
     max-wait: -1
