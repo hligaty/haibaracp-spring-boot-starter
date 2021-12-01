@@ -209,7 +209,7 @@ sftpTemplate.execute(ChannelSftp::pwd);
 - `HostHolder.changeHost(string, boolean)`：连续调用相同 hostkey 的 连接时使用，避免执行一次 SftpTemplate 就要设置一次 hostkey。注意要配合 `HostHolder.clearHostKey()` 使用！！！
 
 ```java
-// 手动清除 hostkey
+// 手动选择 hostkey
 HostHolder.changeHost("remote-1", false);
 try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\1.txt"));
      InputStream inputStream2 = Files.newInputStream(Paths.get("D:\\2.txt"));
