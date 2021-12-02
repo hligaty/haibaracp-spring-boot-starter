@@ -18,7 +18,10 @@ public class HostHolder {
   private static Set<String> hostKeys;
 
   public static LinkedHashMap<String, ClientProperties> initHostKeys(LinkedHashMap<String, ClientProperties> clientPropertiesMap) {
-    HostHolder.hostKeys = Collections.unmodifiableSet(clientPropertiesMap.keySet());
+    if (hostKeys != null) {
+      throw new UnsupportedOperationException("HostHolder hostKeys unsupported modify");
+    }
+    hostKeys = Collections.unmodifiableSet(clientPropertiesMap.keySet());
     return clientPropertiesMap;
   }
 
