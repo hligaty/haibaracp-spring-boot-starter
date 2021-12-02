@@ -15,7 +15,7 @@
 
 ## 介绍
 
-HaibaraCP 是一个 SFTP 连接池，支持密码和密钥登录以及多个 Host 连接。SFTP 通过 SSH 建立连接，而 SSH 连接数默认是有限的，10 个以外的连接将有 30 % 的概率连接失败，当超过 100 个连接时将拒绝创建新连接，因此要避免频繁创建新连接。 
+HaibaraCP 是一个 SFTP 连接池，支持密码和密钥登录以及多个 Host 连接，并提供和 RedisTemplate 一样优雅的 SftpTemplate。SFTP 通过 SSH 建立连接，而 SSH 连接数默认是有限的，10 个以外的连接将有 30 % 的概率连接失败，当超过 100 个连接时将拒绝创建新连接，因此要避免频繁创建新连接。 
 
 ## Maven 依赖
 
@@ -68,7 +68,7 @@ sftp:
 ```
 sftp:
   hosts:
-  	remote-1:
+    remote-1:
       host: 127.0.0.1
       port: 22
       username: root
@@ -91,7 +91,7 @@ sftp:
 ```yml
 sftp:
   pool:
-  	min-idle: 1
+    min-idle: 1
     max-idle: 4
     max-active: 8
     max-wait: -1
@@ -209,7 +209,7 @@ sftpTemplate.execute(ChannelSftp::pwd);
 - `HostHolder.changeHost(string, boolean)`：连续调用相同 hostkey 的 连接时使用，避免执行一次 SftpTemplate 就要设置一次 hostkey。注意要配合 `HostHolder.clearHostKey()` 使用！！！
 
 ```java
-// 手动清除 hostkey
+// 手动选择 hostkey
 HostHolder.changeHost("remote-1", false);
 try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\1.txt"));
      InputStream inputStream2 = Files.newInputStream(Paths.get("D:\\2.txt"));
