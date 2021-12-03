@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * @author gaodapeng
+ * @author hligaty
  */
 public class SftpTemplate {
   private static final Logger log = LoggerFactory.getLogger(SftpTemplate.class);

@@ -5,7 +5,7 @@ import com.jcraft.jsch.UserInfo;
 /**
  * SFTP 秘钥登录
  *
- * @author gaodapeng
+ * @author hligaty
  */
 public class UserInfoImpl implements UserInfo {
   private final String passphrase;

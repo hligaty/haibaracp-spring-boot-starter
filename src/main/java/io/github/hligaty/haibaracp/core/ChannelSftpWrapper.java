@@ -11,7 +11,7 @@ import java.io.OutputStream;
 /**
  * {@link SftpClient} 功能封装类，包含常用 {@link ChannelSftp} 操作。
  *
- * @author gaodapeng
+ * @author hligaty
  */
 public class ChannelSftpWrapper {
   private static final String SEPARATOR = "/";

@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.StringJoiner;
 
 /**
- * @author gaodapeng
+ * @author hligaty
  */
 @ConfigurationProperties("sftp.pool")
 public class PoolProperties {
