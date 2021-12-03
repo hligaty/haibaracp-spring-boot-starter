@@ -40,7 +40,9 @@ public class SftpPool {
     if (uniqueHost) {
       internalPool.invalidateObject(sftpClient);
     } else {
-      internalKeyedPool.invalidateObject(HostHolder.getHostKey(), sftpClient);
+      String hostKey = HostHolder.getHostKey();
+      HostHolder.clear();
+      internalKeyedPool.invalidateObject(hostKey, sftpClient);
     }
   }
 
@@ -48,7 +50,9 @@ public class SftpPool {
     if (uniqueHost) {
       internalPool.returnObject(sftpClient);
     } else {
-      internalKeyedPool.returnObject(HostHolder.getHostKey(), sftpClient);
+      String hostKey = HostHolder.getHostKey();
+      HostHolder.clear();
+      internalKeyedPool.returnObject(hostKey, sftpClient);
     }
   }
 
@@ -117,7 +121,7 @@ public class SftpPool {
 
     @Override
     public void destroyObject(String key, PooledObject<SftpClient> p) throws Exception {
-      super.destroyObject(key, p);
+      p.getObject().disconnect();
     }
   }
 

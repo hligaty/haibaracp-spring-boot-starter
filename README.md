@@ -24,7 +24,7 @@ HaibaraCP 是一个 SFTP 连接池，支持密码和密钥登录以及多个 Hos
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -181,7 +181,7 @@ try (OutputStream outPutStream1 = Files.newOutputStream(Paths.get("D:\\1.txt"));
 }
 ```
 
-`download(String from, OutputStream to)` 方法一样会根据 to 逐级检查并进入目录（如果是目录格式），但当某级目录不存在或进入目录后发现文件不存在就会抛出 to 文件 `FileNotFoundException`。
+`download(String from, OutputStream to)` 方法一样会根据 from 逐级检查并进入目录（如果是目录格式），最后下载文件，但如果某级目录不存在或进入目录后发现文件不存在就会抛出 to 文件 `FileNotFoundException`。
 
 方法不会主动关闭流，请手动关闭。
 
@@ -223,7 +223,7 @@ try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\1.txt"));
 }
 ```
 
--  `HostHolder.hostKeys()` 和 `HostHolder.hostKeys(Predicate<String>)`：获取所有或过滤后的 hostkey。前面介绍的两种切换 hostkey 的方式都要显示指定 hostkey，但有时需要批量执行配置的 n 个 host，此时可以通过该方法获取所有或过滤后的 hostkeys 集合。
+-  `HostHolder.hostKeys()` 与 `HostHolder.hostKeys(Predicate<String>)`：获取所有或过滤后的 hostkey。前面介绍的两种切换 hostkey 的方式都要显示指定 hostkey，但有时需要批量执行配置的 n 个 host，此时可以通过该方法获取所有或过滤后的 hostkeys 集合。
 
 ```java
 // 获取所有以“remote-”开头的 hostkey

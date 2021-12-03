@@ -55,7 +55,6 @@ public class SftpTemplate {
           log.debug(rollback ? "{}: Return client." : "{}: Invalidate client.", sftpClient.getClientInfo());
         }
       }
-      HostHolder.clear();
     }
   }
 
