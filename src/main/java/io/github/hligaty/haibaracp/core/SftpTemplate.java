@@ -5,8 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.NotDirectoryException;
+import java.nio.file.Path;
 
 /**
  * @author hligaty
@@ -59,7 +63,7 @@ public class SftpTemplate {
   }
 
   /**
-   * 将文件 dir 下载到 outputStream
+   * 将文件 from 下载到 to
    *
    * @param from 文件全路径
    * @param to   文件输出流
@@ -69,12 +73,32 @@ public class SftpTemplate {
     this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).download(from, to));
   }
 
+
+  /**
+   * 将文件 from 下载到 to
+   *
+   * @param from 文件全路径
+   * @param to 下载文件路径
+   * @throws Exception 目录不存在或下载时出现意外
+   */
+  public void download(String from, Path to) throws Exception {
+    if (!to.isAbsolute()) {
+      throw new NotDirectoryException(to.toString() + " is not an absolute path");
+    }
+    if (Files.notExists(to.getParent())) {
+      throw new FileNotFoundException(to.getParent().toString());
+    }
+    try (OutputStream outputStream = Files.newOutputStream(to)) {
+      this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).download(from, outputStream));
+    }
+  }
+
   /**
    * 上传 inputStream 到 dir。目录不存在时自动创建，支持相对路径和绝对路径
    *
    * @param from 输入文件流
    * @param to   文件全路径
-   * @throws SftpException 上传或切换目录时出现意外
+   * @throws Exception 上传或切换目录时出现意外
    */
   public void upload(InputStream from, String to) throws Exception {
     this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).upload(from, to));

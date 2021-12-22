@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * {@link SftpClient} 功能封装类，包含常用 {@link ChannelSftp} 操作。
@@ -15,7 +16,6 @@ import java.io.OutputStream;
  */
 public class ChannelSftpWrapper {
   private static final String SEPARATOR = "/";
-  public static final String FILE_NOT_FOUND = "No such file";
   private final ChannelSftp channelSftp;
 
   public ChannelSftpWrapper(ChannelSftp channelSftp) {
@@ -68,7 +68,7 @@ public class ChannelSftpWrapper {
     try {
       return channelSftp.lstat(dir).isDir();
     } catch (SftpException e) {
-      if (FILE_NOT_FOUND.equals(e.getMessage())) {
+      if (e.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
         return false;
       }
       throw e;
@@ -76,14 +76,25 @@ public class ChannelSftpWrapper {
   }
 
   /**
-   * @see SftpTemplate#download
+   * @see SftpTemplate#download(String, OutputStream)
    */
   public final Void download(String from, OutputStream to) throws FileNotFoundException, SftpException {
     if (cd(from.substring(0, from.lastIndexOf(SEPARATOR) + 1), false)) {
       try {
-        channelSftp.get(from.substring(from.lastIndexOf(SEPARATOR) + 1), to);
+        String fileName = from.substring(from.lastIndexOf(SEPARATOR) + 1);
+        AtomicBoolean exist = new AtomicBoolean();
+        channelSftp.ls(fileName, entry -> {
+          if (fileName.equals(entry.getFilename())) {
+            exist.set(true);
+          }
+          return ChannelSftp.LsEntrySelector.BREAK;
+        });
+        if (!exist.get()) {
+          throw new FileNotFoundException(from);
+        }
+        channelSftp.get(fileName, to);
       } catch (SftpException e) {
-        if (FILE_NOT_FOUND.equals(e.getMessage())) {
+        if (e.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
           throw new FileNotFoundException(from);
         }
         throw e;
