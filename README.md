@@ -235,6 +235,7 @@ for (String hostKey : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
 
 ## 计划
 
+- 1.0.7 ssh 实现方式为 Jsch 0.1.55，未来的 1.1.0 版本会将 HaibaraCP 和 ssh 的实现分开，支持 Jsch 和 sshj。
 - 增加 `SftpTemplate` 功能。
 
 ## 常见问题
