@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 
 /**
@@ -82,11 +81,8 @@ public class SftpTemplate {
    * @throws Exception 目录不存在或下载时出现意外
    */
   public void download(String from, Path to) throws Exception {
-    if (!to.isAbsolute()) {
-      throw new NotDirectoryException(to.toString() + " is not an absolute path");
-    }
-    if (Files.notExists(to.getParent())) {
-      throw new FileNotFoundException(to.getParent().toString());
+    if (!to.isAbsolute() || Files.notExists(to.getParent())) {
+      throw new FileNotFoundException(to.toString());
     }
     try (OutputStream outputStream = Files.newOutputStream(to)) {
       this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).download(from, outputStream));
