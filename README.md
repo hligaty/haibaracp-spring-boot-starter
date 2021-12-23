@@ -24,12 +24,11 @@ HaibaraCP 是一个 SFTP 连接池，支持密码和密钥登录以及多个 Hos
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-pool2</artifactId>
-    <version>2.8.1</version>
 </dependency>
 ```
 
@@ -167,11 +166,10 @@ try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\1.txt"));
 
 ```java
 // root 账户 SFTP 登录后目录为 /root
-try (OutputStream outPutStream1 = Files.newOutputStream(Paths.get("D:\\1.txt"));
-         OutputStream outPutStream2 = Files.newOutputStream(Paths.get("D:\\2.txt"));
+try (OutputStream outPutStream2 = Files.newOutputStream(Paths.get("D:\\2.txt"));
          OutputStream outPutStream3 = Files.newOutputStream(Paths.get("D:\\3.txt"))) {
   // 下载 /home/chongci/1.txt 到 D:\\1.txt
-  sftpTemplate.download("/home/haibara/1.txt", outPutStream1);
+  sftpTemplate.download("/home/haibara/1.txt", Paths.get("D:\\1.txt"));
   
   // 下载 /root/haibara/2.txt 到 D:\\1.txt
   sftpTemplate.download("haibara/2.txt", outPutStream2);
@@ -181,9 +179,9 @@ try (OutputStream outPutStream1 = Files.newOutputStream(Paths.get("D:\\1.txt"));
 }
 ```
 
-`download(String from, OutputStream to)` 方法一样会根据 from 逐级检查并进入目录（如果是目录格式），最后下载文件，但如果某级目录不存在或进入目录后发现文件不存在就会抛出 to 文件 `FileNotFoundException`。
+下载文件一样会根据 from 逐级检查并进入目录（如果是目录格式），最后下载文件，但如果某级目录不存在或进入目录后发现文件不存在就会抛出 to 文件 `FileNotFoundException`，如果传入 `Path` 类型的 to 不是绝对路径会抛出 `NotDirectoryException` 。
 
-方法不会主动关闭流，请手动关闭。
+方法不会主动关闭下载（输出）文件的 `outPutStream` 流，请手动关闭。
 
 ### 自定义
 
