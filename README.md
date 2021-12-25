@@ -179,7 +179,7 @@ try (OutputStream outPutStream2 = Files.newOutputStream(Paths.get("D:\\2.txt"));
 }
 ```
 
-下载文件一样会根据 from 逐级检查并进入目录（如果是目录格式），最后下载文件，但如果某级目录不存在或进入目录后发现文件不存在就会抛出 to 文件 `FileNotFoundException`，如果传入 `Path` 类型的 to 不是绝对路径会抛出 `NotDirectoryException` 。
+下载文件一样会根据 from 逐级检查并进入目录（如果是目录格式），最后下载文件，但如果某级目录不存在或进入目录后发现文件不存在就会抛出 to 文件 `FileNotFoundException`，如果传入 `Path` 类型的 to 不是绝对路径同样会抛出 `FileNotFoundException` 。
 
 方法不会主动关闭下载（输出）文件的 `outPutStream` 流，请手动关闭。
 
