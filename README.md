@@ -168,7 +168,7 @@ try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\1.txt"));
 // root 账户 SFTP 登录后目录为 /root
 try (OutputStream outPutStream2 = Files.newOutputStream(Paths.get("D:\\2.txt"));
          OutputStream outPutStream3 = Files.newOutputStream(Paths.get("D:\\3.txt"))) {
-  // 下载 /home/chongci/1.txt 到 D:\\1.txt
+  // 下载 /home/haibara/1.txt 到 D:\\1.txt
   sftpTemplate.download("/home/haibara/1.txt", Paths.get("D:\\1.txt"));
   
   // 下载 /root/haibara/2.txt 到 D:\\1.txt
