@@ -1,4 +1,4 @@
-[English](readme/README.md) | [中文](readme/README.zh_CN.md)
+[English](README.md) | [中文](README.zh_CN.md)
 
 # HaibaraCP
 
