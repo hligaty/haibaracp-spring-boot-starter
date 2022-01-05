@@ -23,12 +23,12 @@ public class SftpTemplate {
   }
 
   /**
-   * 执行指定的 SFTP 操作。
+   * Executes the given action object within a connection, which can be exposed or not.
    *
-   * @param action 指定的 SFTP 操作
-   * @param <T> 指定的返回值类型
-   * @return 指定的返回值，可以为空
-   * @throws Exception 操作 channelsSftp 抛出的 SftpException 或者其他的 Exception
+   * @param action callback object that specifies the Sftp action
+   * @param <T> return type
+   * @return object returned by the action
+   * @throws Exception in case of Sftp or youself code errors
    */
   public <T> T execute(SftpCallback<T> action) throws Exception {
     Assert.notNull(action, "Callback object must not be null");
@@ -62,11 +62,12 @@ public class SftpTemplate {
   }
 
   /**
-   * 将文件 from 下载到 to
+   * Download file.
+   * Support relative path and absolute path: "/home/haibara/aptx4869.docx" or "aptx4869.docx"
    *
-   * @param from 文件全路径
-   * @param to   文件输出流
-   * @throws Exception 目录、文件不存在或下载时出现意外
+   * @param from the path to the remote file
+   * @param to   output stream of local file
+   * @throws Exception if a file not exist or Sftp error occurs
    */
   public void download(String from, OutputStream to) throws Exception {
     this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).download(from, to));
@@ -74,11 +75,12 @@ public class SftpTemplate {
 
 
   /**
-   * 将文件 from 下载到 to
+   * Download file.
    *
-   * @param from 文件全路径
-   * @param to 下载文件路径
-   * @throws Exception 目录不存在或下载时出现意外
+   * @param from the path to the remote file
+   * @param to   the path to the local file
+   * @throws Exception if a file not exist or Sftp error occurs
+   * @see #download(String, OutputStream)
    */
   public void download(String from, Path to) throws Exception {
     if (!to.isAbsolute() || Files.notExists(to.getParent())) {
@@ -90,11 +92,11 @@ public class SftpTemplate {
   }
 
   /**
-   * 上传 inputStream 到 dir。目录不存在时自动创建，支持相对路径和绝对路径
+   * Upload file.
    *
-   * @param from 输入文件流
-   * @param to   文件全路径
-   * @throws Exception 上传或切换目录时出现意外
+   * @param from input stream of local file
+   * @param to   the path to the remote file
+   * @throws Exception if an Sftp error occurs
    */
   public void upload(InputStream from, String to) throws Exception {
     this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).upload(from, to));

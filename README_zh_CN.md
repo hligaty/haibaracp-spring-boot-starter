@@ -14,15 +14,15 @@
 
 > **Gitee：[haibaracp-spring-boot-starter: SFTP Connect Pool (gitee.com)](https://gitee.com/hligy/haibaracp-spring-boot-starter)**
 
-> **Welcome to use and Star support. If you encounter problems during use,  you can raise an Issue and I will try my best to improve it**
+> **欢迎使用和Star支持，如使用过程中碰到问题，可以提出Issue，我会尽力完善**
 
-##  Introduce 
+## 介绍
 
-HaibaraCP is an SFTP connection pool, which supports password and key  login and multiple Host connections, and provides an easy-to-use  `SftpTemplate`. SFTP uses SSH to establish connections, but the number of  SSH connections is limited by default. Connections other than 10 will  have a 30% probability of connection failure. When there are more than  100 connections, it will refuse to create new connections. Therefore,  avoid frequent creation of new connections. 
+HaibaraCP 是一个 SFTP 连接池，支持密码和密钥登录以及多个 Host 连接，并提供和 RedisTemplate 一样优雅的 SftpTemplate。SFTP 通过 SSH 建立连接，而 SSH 连接数默认是有限的，10 个以外的连接将有 30 % 的概率连接失败，当超过 100 个连接时将拒绝创建新连接，因此要避免频繁创建新连接。
 
-## Maven repository
+## Maven 依赖
 
-Spring boot 2 and Commons-Pool 2.6.0 and above are supported.
+支持 springboot2 和 commons-pool2-2.6.0 及以上版本。
 
 ```xml
 <dependency>
@@ -36,11 +36,11 @@ Spring boot 2 and Commons-Pool 2.6.0 and above are supported.
 </dependency>
 ```
 
-## Configuration
+## 配置
 
-See the automatic prompt of the development tool for detailed description of configuration properties.
+详细的配置属性说明见开发工具的自动提示。
 
-### Password login
+### 密码登录
 
 ```yml
 sftp:
@@ -50,7 +50,7 @@ sftp:
   password: 123456
   kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
 ```
-### Key login
+### 密钥登录
 
 ```yml
 sftp:
@@ -63,13 +63,14 @@ sftp:
   kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
 ```
 
-### Multiple hosts
+### 多 Host
 
-For example, two hosts, one password login and one key login:
+比如两个 Host，一个密码登录，一个密钥登录：
 
 ```
 sftp:
   hosts:
+    # 地址的名字，你可以通过它来切换连接
     remote-1:
       host: 127.0.0.1
       port: 22
@@ -86,9 +87,9 @@ sftp:
       kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
 ```
 
-### Connect Pool
+### 连接池（可以不配置）
 
-One host：
+单 Host 连接池配置：
 
 ```yml
 sftp:
@@ -104,7 +105,7 @@ sftp:
     min-evictable-idle-time-millis: 1800000
 ```
 
-Multiple hosts：
+多 Host 连接池配置：
 
 ```yml
 sftp:
@@ -121,9 +122,9 @@ sftp:
     min-evictable-idle-time-millis: 1800000
 ```
 
-## Use
+## 使用
 
-HaibaraCP provides the `SftpTemplate ` class, which is used in the same way as the RedisTemplate provided by spring-boot-starter-data-redis, and it can be used by injecting it in any way:
+HaibaraCP 提供 SftpTemplate 类，它与 `spring-boot-starter-data-redis`  提供的 RedisTemplate 使用方法相同，任意方式注入即可使用：
 
 ```java
 @Component
@@ -142,69 +143,74 @@ public class XXXService {
 
 ## API
 
-### Upload
+### 上传文件
 
 ```java
+// root 账户 SFTP 登录后目录为 /root
 try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.docx"));
      InputStream inputStream2 = Files.newInputStream(Paths.get("D:\\aptx4869.pdf"));
      InputStream inputStream3 = Files.newInputStream(Paths.get("D:\\aptx4869.doc"))) {
-  // upload D:\\aptx4869.docx to /home/haibara/aptx4869.docx
+  // 上传 D:\\aptx4869.docx 到 /home/haibara/aptx4869.docx
   sftpTemplate.upload(inputStream1, "/home/haibara/aptx4869.docx");
-  
-  // upload D:\\aptx4869.pdf to /root/haibara/aptx4869.pdf
+
+  // 上传 D:\\aptx4869.pdf 到 /root/haibara/aptx4869.pdf
   sftpTemplate.upload(inputStream2, "haibara/aptx4869.pdf");
-  
-  // upload D:\\aptx4869.doc to /root/aptx4869.doc
+
+  // 上传 D:\\aptx4869.doc 到 /root/aptx4869.doc
   sftpTemplate.upload(inputStream3, "aptx4869.doc");
 }
 ```
 
-The `upload(InputStream from, String to)` method will check the upload  directory level by level (if it is a directory format), the directory  will be created if it does not exist, and the file will be uploaded  after entering the uploaded directory.
+`upload(InputStream from, String to)` 方法会逐级检查上传目录（如果是目录格式），目录不存在就会创建，直到进入上传的目录后上传文件。
 
-The method does not actively  close the stream, please close it manually.
+方法不会主动关闭流，请手动关闭。
 
-### Download
+### 下载文件
 
 ```java
-// download /home/haibara/aptx4869.docx to D:\\aptx4869.docx
+// root 账户 SFTP 登录后目录为 /root
+// 下载 /home/haibara/aptx4869.docx 到 D:\\aptx4869.docx
 sftpTemplate.download("/home/haibara/aptx4869.docx", Paths.get("D:\\aptx4869.docx"));
 try (OutputStream outPutStream2 = Files.newOutputStream(Paths.get("D:\\aptx4869.pdf"));
          OutputStream outPutStream3 = Files.newOutputStream(Paths.get("D:\\aptx4869.doc"))) {
-  // download /root/haibara/aptx4869.pdf to D:\\aptx4869.pdf
+  // 下载 /root/haibara/aptx4869.pdf 到 D:\\aptx4869.pdf
   sftpTemplate.download("haibara/aptx4869.pdf", outPutStream2);
-  
-  // download /root/aptx4869.doc to D:\\aptx4869.doc
+
+  // 下载 /root/aptx4869.doc 到 D:\\aptx4869.doc
   sftpTemplate.download("aptx4869.doc", outPutStream3);
 }
 ```
 
-When downloading a file, it will check the download directory level by  level (if it is in a directory format), and download the file after  entering the directory, but if a certain level of directory does not  exist or the file does not exist after entering the directory, the to  file `FileNotFoundException` will be thrown immediately, if If the type  of `Path` is not an absolute path, a `FileNotFoundException` will be  thrown immediately. The method will not actively close the  `outPutStream` stream of the downloaded (output) file, please close it  manually.
+下载文件一样会逐级检查下载目录（如果是目录格式），并在进入目录后下载文件，但如果某级目录不存在或进入目录后发现文件不存在会立即抛出 to 文件 `FileNotFoundException`，如果传入的 `Path` 类型不是绝对路径也会立即抛出 `FileNotFoundException` 。
 
-### Execute
+方法不会主动关闭下载（输出）文件的 `outPutStream` 流，请手动关闭。
 
-`execute(SftpCallback action)` is used to customize SFTP operations,  such as viewing the SFTP default directory (for other uses of  ChannelSftp, please refer to the API of jsch):
+### 自定义
+
+`execute(SftpCallback<T> action)` 用于自定义 SFTP 操作，比如查看 SFTP 默认目录（关于 ChannelSftp 的其他用法请参考 jsch 的 API）：
 
 ```java
 String dir = sftpTemplate.execute(ChannelSftp::pwd);
 ```
 
-###  Multiple hosts
+###  多 Host
 
-To use SftpTemplate in the connection pool of multiple connections from different hosts, you need to specify the connection to be used for HaibaraCP, otherwise a `NullPointerException` will be thrown. The following describes how to specify the connection (examples use the configuration in the `Configuration-Multiple Host` chapter to explain ):
+在多 Host 使用  SftpTemplate 需要为 HaibaraCP 指定将要使用的连接，否则将抛出 `NullPointerException`，下面介绍了如何指定连接（例子使用 `配置-多Host` 章节中的配置进行说明）：
 
-- `HostHolder.changeHost(string)`: Specify the connection to be used next  time through hostkey (that is, the key in the map under the specified  configuration file sftp.hosts. The following hostkey will not be  explained repeatedly). Note that it can only specify the next  connection! ! !
+- `HostHolder.changeHost(string)` ：通过 hostkey （即指定配置文件 sftp.hosts 下 map 中的 key。后面的 hostkey 不再重复说明） 指定下次使用的连接。注意它只能指定下一次的连接！！！
 
 ```
 HostHolder.changeHost("remote-1");
-// success
+// 成功打印 remote-1 对应连接的原始目录
 sftpTemplate.execute(ChannelSftp::pwd);
-// NullPointerException
+// 第二次执行失败，抛出空指针
 sftpTemplate.execute(ChannelSftp::pwd);
 ```
 
-- `HostHolder.changeHost(string, boolean)`: It is used when calling the  same host connection continuously to avoid setting the hostkey once when executing SftpTemplate once. Pay attention to use with  `HostHolder.clearHostKey()`! ! !
+- `HostHolder.changeHost(string, boolean)`：连续调用相同 host 连接时使用，避免执行一次 SftpTemplate 就要设置一次 hostkey。注意要配合 `HostHolder.clearHostKey()` 使用！！！
 
 ```java
+// 手动选择 hostkey
 HostHolder.changeHost("remote-1", false);
 try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.docx"));
      InputStream inputStream2 = Files.newInputStream(Paths.get("D:\\aptx4869.pdf"));
@@ -217,10 +223,10 @@ try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.doc
 }
 ```
 
--  `HostHolder. Hostkeys() ` and ` hostholder Hostkeys (predict < string >) `: get the keys of all or filtered host connections. The two connection switching methods described above need to display the specified hostkey, but sometimes the configured n host connections need to be executed in batch. At this time, all or filtered hostkey sets can be obtained through this method
+-  `HostHolder.hostKeys()` 与 `HostHolder.hostKeys(Predicate<String>)`：获取所有或过滤后的 host 连接的 key。前面介绍的两种切换连接的方式都要显示指定 hostkey，但有时需要批量执行配置的 n 个 host 连接，此时可以通过该方法获取所有或过滤后的 hostkey 集合。
 
 ```java
-// Get all hostkeys starting with "remote-"
+// 获取所有以“remote-”开头的 hostkey
 for (String hostKey : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
   HostHolder.changeHost(hostKey);
   try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.docx"))) {
@@ -229,7 +235,7 @@ for (String hostKey : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
 }
 ```
 
-## Problem
+## 常见问题
 
 - JSchException: invalid privatekey：https://github.com/mwiede/jsch/issues/12#issuecomment-662863338
 

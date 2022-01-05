@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.0.7</version>
+    <version>1.1.0</version>
     <name>haibaracp-spring-boot-starter</name>
     <description>sftp connect pool</description>
     <url>https://github.com/hligaty/haibaracp-spring-boot-starter</url>

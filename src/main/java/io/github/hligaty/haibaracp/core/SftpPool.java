@@ -13,6 +13,8 @@ import javax.annotation.PreDestroy;
 import java.util.Map;
 
 /**
+ * SFTP connect pool.
+ *
  * @author hligaty
  */
 public class SftpPool {
@@ -120,7 +122,7 @@ public class SftpPool {
     }
 
     @Override
-    public void destroyObject(String key, PooledObject<SftpClient> p) throws Exception {
+    public void destroyObject(String key, PooledObject<SftpClient> p) {
       p.getObject().disconnect();
     }
   }

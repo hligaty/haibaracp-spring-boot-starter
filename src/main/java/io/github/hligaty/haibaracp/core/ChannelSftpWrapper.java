@@ -10,7 +10,7 @@ import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * {@link SftpClient} 功能封装类，包含常用 {@link ChannelSftp} 操作。
+ * Helper class that simplifies ChannelSftp use code.
  *
  * @author hligaty
  */
@@ -23,11 +23,10 @@ public class ChannelSftpWrapper {
   }
 
   /**
-   * 进入指定目录，遇到没创建的目录会自动创建。
-   * 如果 dir 是“/”开头，就从根目录开始进入；否则从 pwd 当前目录开始进入。
+   * Switch the directory, if the directory does not exist, mkdir decides whether to create it.
    *
-   * @param dir 目录名
-   * @throws SftpException 如果检查、进入或创建过程中发生意外
+   * @param dir the directory to switch
+   * @throws SftpException if an sftp error occurs
    */
   public final boolean cd(String dir, boolean mkdir) throws SftpException {
     if (!StringUtils.hasText(dir)) {
@@ -36,7 +35,10 @@ public class ChannelSftpWrapper {
     try {
       channelSftp.cd(dir);
       return true;
-    } catch (SftpException ignored) {
+    } catch (SftpException e) {
+      if (e.id != ChannelSftp.SSH_FX_NO_SUCH_FILE) {
+        throw e;
+      }
       if (dir.startsWith(SEPARATOR)) {
         channelSftp.cd(SEPARATOR);
       }
@@ -58,11 +60,11 @@ public class ChannelSftpWrapper {
   }
 
   /**
-   * 判断当前目录下是否存在 dir 这一级目录
+   * Tests whether a dir exists.
    *
-   * @param dir 目录名
-   * @return 是否为目录
-   * @throws SftpException 判断时出现意外
+   * @param dir the dir to test
+   * @return true if the dir is exist
+   * @throws SftpException if an sftp error occurs
    */
   public final boolean isDir(String dir) throws SftpException {
     try {

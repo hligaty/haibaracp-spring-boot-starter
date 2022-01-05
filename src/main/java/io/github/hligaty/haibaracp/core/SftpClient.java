@@ -12,7 +12,7 @@ import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 连接池对象
+ * Sftp connect object.
  *
  * @author hligaty
  */
@@ -22,14 +22,13 @@ public class SftpClient {
   private final ChannelSftp channelSftp;
   private final Session session;
   /**
-   * 连接信息
+   * connect info.
    */
   private String clientInfo = "Sftpclient-";
   private static final AtomicLong CLIENT_NUMBER = new AtomicLong(1L);
   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
   /**
-   * ssh 根目录。
-   * 用于判断是否成功返回连接到连接池的条件之一
+   * The original directory when the connection was established.
    */
   private final String originalDir;
 
@@ -71,7 +70,7 @@ public class SftpClient {
   }
 
   /**
-   * 释放连接
+   * Release the connection.
    */
   protected final void disconnect() {
     if (channelSftp != null) {
@@ -94,9 +93,9 @@ public class SftpClient {
   }
 
   /**
-   * 验证连接是否可用。与 {@link #rollback} 相照应。
+   * Validate connect.
    *
-   * @return 连接是否可用
+   * @return true if connect available
    */
   protected boolean validateConnect() {
     try {
@@ -114,9 +113,9 @@ public class SftpClient {
   }
 
   /**
-   * 回滚 SFTP 连接到初始状态。与 {@link #validateConnect} 相照应。
+   * Recovery connect status.
    *
-   * @return 是否成功回滚到初始连接状态
+   * @return true If the recovery is successful.
    */
   protected boolean rollback() {
     try {

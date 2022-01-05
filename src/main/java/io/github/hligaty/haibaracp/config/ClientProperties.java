@@ -6,39 +6,44 @@ import java.util.LinkedHashMap;
 import java.util.StringJoiner;
 
 /**
+ * Configuration properties for SFTP.
+ *
  * @author hligaty
  */
 @ConfigurationProperties("sftp")
 public class ClientProperties {
   /**
-   * 地址
+   * SFTP server host.
    */
   private String host = "localhost";
   /**
-   * 端口号
+   * SFTP server port.
    */
   private int port = 22;
   /**
-   * 用户名
+   * Login username of the sftp server.
    */
   private String username;
   /**
-   * 验证私钥
+   * Whether to enable host key login.
    */
   private boolean strictHostKeyChecking = false;
   /**
-   * 私钥路径
+   * host key.
    */
   private String keyPath;
   /**
-   * 密码或私钥密码
+   * Login password or host key passphrase of the sftp server.
    */
   private String password = "";
   /**
-   * 算法
+   * SSH kex algorithms.
    */
   private String kex;
 
+  /**
+   * Configure multiple hosts.
+   */
   private LinkedHashMap<String, ClientProperties> hosts;
 
   public String getHost() {
@@ -97,6 +102,9 @@ public class ClientProperties {
     this.kex = kex;
   }
 
+  /**
+   * @return map key is used to switch the host connection, value is client properties.
+   */
   public LinkedHashMap<String, ClientProperties> getHosts() {
     return hosts;
   }
