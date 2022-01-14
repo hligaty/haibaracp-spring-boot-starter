@@ -70,7 +70,7 @@ public class SftpClient {
   }
 
   /**
-   * Release the connection.
+   * Disconnect the connection.
    */
   protected final void disconnect() {
     if (channelSftp != null) {
@@ -95,7 +95,7 @@ public class SftpClient {
   /**
    * Validate connect.
    *
-   * @return true if connect available
+   * @return true if connect available.
    */
   protected boolean validateConnect() {
     try {
@@ -113,11 +113,11 @@ public class SftpClient {
   }
 
   /**
-   * Recovery connect status.
+   * Reset connect.
    *
-   * @return true If the recovery is successful.
+   * @return true If the reset is successful.
    */
-  protected boolean rollback() {
+  protected boolean reset() {
     try {
       channelSftp.cd(originalDir);
       return true;

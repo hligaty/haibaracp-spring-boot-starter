@@ -18,7 +18,7 @@
 
 ##  Introduce 
 
-HaibaraCP is an SFTP connection pool, which supports password and key  login and multiple Host connections, and provides an easy-to-use  `SftpTemplate`. SFTP uses SSH to establish connections, but the number of  SSH connections is limited by default. Connections other than 10 will  have a 30% probability of connection failure. When there are more than  100 connections, it will refuse to create new connections. Therefore,  avoid frequent creation of new connections. 
+HaibaraCP is a SpringBoot Starter for SFTP, which supports password and key  login and multiple Host connections, and provides an easy-to-use  `SftpTemplate`. SFTP uses SSH to establish connections, but the number of  SSH connections is limited by default. Connections other than 10 will  have a 30% probability of connection failure. When there are more than  100 connections, it will refuse to create new connections. Therefore,  avoid frequent creation of new connections. 
 
 ## Maven repository
 
@@ -28,7 +28,7 @@ Spring boot 2 and Commons-Pool 2.6.0 and above are supported.
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -142,50 +142,83 @@ public class XXXService {
 
 ## API
 
-### Upload
+All methods may throw `SftpException`, which usually means there is a problem with the connection, or the file you uploaded or downloaded does not exist.
+
+### upload
+
+Upload a file, the method will recursively create the parent directory where the uploaded remote file is located.
 
 ```java
-try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.docx"));
-     InputStream inputStream2 = Files.newInputStream(Paths.get("D:\\aptx4869.pdf"));
-     InputStream inputStream3 = Files.newInputStream(Paths.get("D:\\aptx4869.doc"))) {
-  // upload D:\\aptx4869.docx to /home/haibara/aptx4869.docx
-  sftpTemplate.upload(inputStream1, "/home/haibara/aptx4869.docx");
-  
-  // upload D:\\aptx4869.pdf to /root/haibara/aptx4869.pdf
-  sftpTemplate.upload(inputStream2, "haibara/aptx4869.pdf");
-  
-  // upload D:\\aptx4869.doc to /root/aptx4869.doc
-  sftpTemplate.upload(inputStream3, "aptx4869.doc");
-}
+// upload D:\\aptx4869.docx to /home/haibara/aptx4869.docx
+sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
+
+// upload D:\\aptx4869.pdf to /root/haibara/aptx4869.pdf
+sftpTemplate.upload("D:\\aptx4869.pdf", "haibara/aptx4869.pdf");
+
+// upload D:\\aptx4869.doc to /root/aptx4869.doc
+sftpTemplate.upload("D:\\aptx4869.doc", "aptx4869.doc");
 ```
 
-The `upload(InputStream from, String to)` method will check the upload  directory level by level (if it is a directory format), the directory  will be created if it does not exist, and the file will be uploaded  after entering the uploaded directory.
+### download
 
-The method does not actively  close the stream, please close it manually.
-
-### Download
+Download a file, the method will only create the downloaded local file, not the parent directory of the local file.
 
 ```java
 // download /home/haibara/aptx4869.docx to D:\\aptx4869.docx
-sftpTemplate.download("/home/haibara/aptx4869.docx", Paths.get("D:\\aptx4869.docx"));
-try (OutputStream outPutStream2 = Files.newOutputStream(Paths.get("D:\\aptx4869.pdf"));
-         OutputStream outPutStream3 = Files.newOutputStream(Paths.get("D:\\aptx4869.doc"))) {
-  // download /root/haibara/aptx4869.pdf to D:\\aptx4869.pdf
-  sftpTemplate.download("haibara/aptx4869.pdf", outPutStream2);
-  
-  // download /root/aptx4869.doc to D:\\aptx4869.doc
-  sftpTemplate.download("aptx4869.doc", outPutStream3);
-}
+sftpTemplate.download("/home/haibara/aptx4869.docx", "D:\\aptx4869.docx");
+
+// download /root/haibara/aptx4869.pdf to D:\\aptx4869.pdf
+sftpTemplate.download("haibara/aptx4869.pdf", "D:\\aptx4869.pdf");
+
+// download /root/aptx4869.doc to D:\\aptx4869.doc
+sftpTemplate.download("aptx4869.doc", "D:\\aptx4869.doc");
 ```
 
-When downloading a file, it will check the download directory level by  level (if it is in a directory format), and download the file after  entering the directory, but if a certain level of directory does not  exist or the file does not exist after entering the directory, the to  file `FileNotFoundException` will be thrown immediately, if If the type  of `Path` is not an absolute path, a `FileNotFoundException` will be  thrown immediately. The method will not actively close the  `outPutStream` stream of the downloaded (output) file, please close it  manually.
+### exists
 
-### Execute
+Tests whether a file exists.
+
+```java
+// Tests whether /home/haibara/aptx4869.pdf exists
+boolean result1 = sftpTemplate.exists("/home/haibara/aptx4869.pdf");
+// Tests whether /root/haibara/aptx4869.docx exists
+boolean result2 = sftpTemplate.exists("haibara/aptx4869.docx");
+// Tests whether /root/aptx4869.doc exists
+boolean result3 = sftpTemplate.exists("aptx4869.doc");
+```
+
+### list
+
+View a list of files or directories.
+
+```java
+// View file /home/haibara/aptx4869.pdf
+LsEntry[] list1 = sftpTemplate.list("/home/haibara/aptx4869.pdf");
+// View file /root/haibara/aptx4869.docx
+LsEntry[] list2 = sftpTemplate.list("haibara/aptx4869.docx");
+// View file /root/aptx4869.doc
+LsEntry[] list3 = sftpTemplate.list("aptx4869.doc");
+
+// View dir list /home/haibara
+LsEntry[] list4 = sftpTemplate.list("/home/haibara");
+// View dir list /root/haibara
+LsEntry[] list5 = sftpTemplate.list("haibara");
+```
+
+### execute
 
 `execute(SftpCallback action)` is used to customize SFTP operations,  such as viewing the SFTP default directory (for other uses of  ChannelSftp, please refer to the API of jsch):
 
 ```java
 String dir = sftpTemplate.execute(ChannelSftp::pwd);
+```
+
+### executeWithoutResult
+
+`executeWithoutResult(SftpCallbackWithoutResult action)` is used to customize SFTP operations with no return value, such as viewing the default SFTP directory (for other uses of ChannelSftp, please refer to jsch&#39;s API):
+
+```java
+sftpTemplate.executeWithoutResult(channelSftp -> System.out.println(channelSftp.getHome()));
 ```
 
 ###  Multiple hosts
@@ -206,12 +239,10 @@ sftpTemplate.execute(ChannelSftp::pwd);
 
 ```java
 HostHolder.changeHost("remote-1", false);
-try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.docx"));
-     InputStream inputStream2 = Files.newInputStream(Paths.get("D:\\aptx4869.pdf"));
-     InputStream inputStream3 = Files.newInputStream(Paths.get("D:\\aptx4869.doc"))) {
-  sftpTemplate.upload(inputStream1, "/home/haibara/aptx4869.docx");
-  sftpTemplate.upload(inputStream2, "haibara/aptx4869.pdf");
-  sftpTemplate.upload(inputStream3, "aptx4869.doc");
+try {
+  sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
+  sftpTemplate.upload("D:\\aptx4869.pdf", "haibara/aptx4869.pdf");
+  sftpTemplate.upload("D:\\aptx4869.doc", "aptx4869.doc");
 } finally {
   HostHolder.clearHostKey();
 }
@@ -223,9 +254,7 @@ try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.doc
 // Get all hostkeys starting with "remote-"
 for (String hostKey : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
   HostHolder.changeHost(hostKey);
-  try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.docx"))) {
-    sftpTemplate.upload(inputStream1, "/home/haibara/aptx4869.docx");
-  }
+  sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
 }
 ```
 

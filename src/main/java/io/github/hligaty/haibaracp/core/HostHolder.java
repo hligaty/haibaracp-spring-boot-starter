@@ -28,7 +28,7 @@ public class HostHolder {
   /**
    * Return all host keys.
    *
-   * @return host keys
+   * @return host keys.
    * @see ClientProperties#getHosts()
    */
   public static Set<String> hostKeys() {
@@ -39,10 +39,10 @@ public class HostHolder {
   }
 
   /**
-   * Return the filtered host key
+   * Return the filtered host key.
    *
-   * @param predicate filter condition
-   * @return host keys
+   * @param predicate filter condition.
+   * @return host keys.
    */
   public static Set<String> hostKeys(Predicate<String> predicate) {
     if (hostKeys == null) {
@@ -54,7 +54,7 @@ public class HostHolder {
   /**
    * Switch the host connect currently bound to the thread. Only switch once.
    *
-   * @param hostKey host key
+   * @param hostKey host key.
    * @see ClientProperties#getHosts()
    */
   public static void changeHost(String hostKey) {
@@ -64,8 +64,8 @@ public class HostHolder {
   /**
    * Switch the host connect currently bound to the thread.
    *
-   * @param hostKey host key
-   * @param autoClose If true, the thread bound value is automatically cleared
+   * @param hostKey host key.
+   * @param autoClose If true, the thread bound value is automatically cleared.
    * @see ClientProperties#getHosts()
    */
   public static void changeHost(String hostKey, boolean autoClose) {
@@ -73,7 +73,7 @@ public class HostHolder {
   }
 
   /**
-   * Clear the hostkey bound to the thread
+   * Clear the hostkey bound to the thread.
    */
   public static void clearHostKey() {
     THREADLOCAL.remove();
@@ -89,10 +89,7 @@ public class HostHolder {
 
   protected static void clear() {
     Tuple2 tuple2;
-    if ((tuple2 = THREADLOCAL.get()) == null) {
-      return;
-    }
-    if (tuple2.autoClose) {
+    if ((tuple2 = THREADLOCAL.get()) != null && tuple2.autoClose) {
       THREADLOCAL.remove();
     }
   }

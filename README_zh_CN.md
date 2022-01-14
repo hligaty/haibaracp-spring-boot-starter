@@ -18,7 +18,7 @@
 
 ## 介绍
 
-HaibaraCP 是一个 SFTP 连接池，支持密码和密钥登录以及多个 Host 连接，并提供和 RedisTemplate 一样优雅的 SftpTemplate。SFTP 通过 SSH 建立连接，而 SSH 连接数默认是有限的，10 个以外的连接将有 30 % 的概率连接失败，当超过 100 个连接时将拒绝创建新连接，因此要避免频繁创建新连接。
+HaibaraCP 是一个 SFTP 的 SpringBoot Starter，支持密码和密钥登录以及多个 Host 连接，并提供和 RedisTemplate 一样优雅的 SftpTemplate。SFTP 通过 SSH 建立连接，而 SSH 连接数默认是有限的，10 个以外的连接将有 30 % 的概率连接失败，当超过 100 个连接时将拒绝创建新连接，因此要避免频繁创建新连接。
 
 ## Maven 依赖
 
@@ -28,7 +28,7 @@ HaibaraCP 是一个 SFTP 连接池，支持密码和密钥登录以及多个 Hos
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -143,54 +143,79 @@ public class XXXService {
 
 ## API
 
-### 上传文件
+所有方法都可能抛出 `SftpException`，这通常代表连接出问题了，也可能是你上传或下载的文件不存在。
+
+### upload
+
+上传文件，该方法会递归创建上传的远程文件所在的父目录。
 
 ```java
-// root 账户 SFTP 登录后目录为 /root
-try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.docx"));
-     InputStream inputStream2 = Files.newInputStream(Paths.get("D:\\aptx4869.pdf"));
-     InputStream inputStream3 = Files.newInputStream(Paths.get("D:\\aptx4869.doc"))) {
-  // 上传 D:\\aptx4869.docx 到 /home/haibara/aptx4869.docx
-  sftpTemplate.upload(inputStream1, "/home/haibara/aptx4869.docx");
+// 上传 D:\\aptx4869.docx 到 /home/haibara/aptx4869.docx
+sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
 
-  // 上传 D:\\aptx4869.pdf 到 /root/haibara/aptx4869.pdf
-  sftpTemplate.upload(inputStream2, "haibara/aptx4869.pdf");
+// 上传 D:\\aptx4869.pdf 到 /root/haibara/aptx4869.pdf
+sftpTemplate.upload("D:\\aptx4869.pdf", "haibara/aptx4869.pdf");
 
-  // 上传 D:\\aptx4869.doc 到 /root/aptx4869.doc
-  sftpTemplate.upload(inputStream3, "aptx4869.doc");
-}
+// 上传 D:\\aptx4869.doc 到 /root/aptx4869.doc
+sftpTemplate.upload("D:\\aptx4869.doc", "aptx4869.doc");
 ```
 
-`upload(InputStream from, String to)` 方法会逐级检查上传目录（如果是目录格式），目录不存在就会创建，直到进入上传的目录后上传文件。
+### download
 
-方法不会主动关闭流，请手动关闭。
-
-### 下载文件
+下载文件，该方法只会创建下载的本地文件，不会创建本地文件的父目录。
 
 ```java
-// root 账户 SFTP 登录后目录为 /root
 // 下载 /home/haibara/aptx4869.docx 到 D:\\aptx4869.docx
-sftpTemplate.download("/home/haibara/aptx4869.docx", Paths.get("D:\\aptx4869.docx"));
-try (OutputStream outPutStream2 = Files.newOutputStream(Paths.get("D:\\aptx4869.pdf"));
-         OutputStream outPutStream3 = Files.newOutputStream(Paths.get("D:\\aptx4869.doc"))) {
-  // 下载 /root/haibara/aptx4869.pdf 到 D:\\aptx4869.pdf
-  sftpTemplate.download("haibara/aptx4869.pdf", outPutStream2);
+sftpTemplate.download("/home/haibara/aptx4869.docx", "D:\\aptx4869.docx");
 
-  // 下载 /root/aptx4869.doc 到 D:\\aptx4869.doc
-  sftpTemplate.download("aptx4869.doc", outPutStream3);
-}
+// 下载 /root/haibara/aptx4869.pdf 到 D:\\aptx4869.pdf
+sftpTemplate.download("haibara/aptx4869.pdf", "D:\\aptx4869.pdf");
+
+// 下载 /root/aptx4869.doc 到 D:\\aptx4869.doc
+sftpTemplate.download("aptx4869.doc", "D:\\aptx4869.doc");
 ```
 
-下载文件一样会逐级检查下载目录（如果是目录格式），并在进入目录后下载文件，但如果某级目录不存在或进入目录后发现文件不存在会立即抛出 to 文件 `FileNotFoundException`，如果传入的 `Path` 类型不是绝对路径也会立即抛出 `FileNotFoundException` 。
+### exists
 
-方法不会主动关闭下载（输出）文件的 `outPutStream` 流，请手动关闭。
+```java
+// 测试 /home/haibara/aptx4869.docx 是否存在
+boolean result1 = sftpTemplate.exists("/home/haibara/aptx4869.pdf");
+// 测试 /root/haibara/aptx4869.docx 是否存在
+boolean result2 = sftpTemplate.exists("/root/haibara/aptx4869.docx");
+// 测试 /root/aptx4869.docx 是否存在
+boolean result3 = sftpTemplate.exists("/root/aptx4869.doc");
+```
 
-### 自定义
+### list
 
-`execute(SftpCallback<T> action)` 用于自定义 SFTP 操作，比如查看 SFTP 默认目录（关于 ChannelSftp 的其他用法请参考 jsch 的 API）：
+```java
+// 查看文件 /home/haibara/aptx4869.pdf
+LsEntry[] list1 = sftpTemplate.list("/home/haibara/aptx4869.pdf");
+// 查看文件 /root/haibara/aptx4869.docx
+LsEntry[] list2 = sftpTemplate.list("haibara/aptx4869.docx");
+// 查看文件 /root/aptx4869.doc
+LsEntry[] list3 = sftpTemplate.list("aptx4869.doc");
+
+// 查看目录 /home/haibara
+LsEntry[] list4 = sftpTemplate.list("/home/haibara");
+// 查看目录 /root/haibara
+LsEntry[] list5 = sftpTemplate.list("haibara");
+```
+
+### execute
+
+`execute(SftpCallback<T> action)` 和 `executeWithoutResult(SftpCallbackWithoutResult action)` 用于自定义 SFTP 操作，比如查看 SFTP 默认目录（关于 ChannelSftp 的其他用法请参考 jsch 的 API）：
 
 ```java
 String dir = sftpTemplate.execute(ChannelSftp::pwd);
+```
+
+### executeWithoutResult
+
+`executeWithoutResult(SftpCallbackWithoutResult action)`用于自定义没有返回值的SFTP操作，比如查看默认的SFTP目录（ChannelSftp的其他用途，请参考jsch的API）：
+
+```java
+sftpTemplate.executeWithoutResult(channelSftp -> System.out.println(channelSftp.getHome()));
 ```
 
 ###  多 Host
@@ -210,14 +235,11 @@ sftpTemplate.execute(ChannelSftp::pwd);
 - `HostHolder.changeHost(string, boolean)`：连续调用相同 host 连接时使用，避免执行一次 SftpTemplate 就要设置一次 hostkey。注意要配合 `HostHolder.clearHostKey()` 使用！！！
 
 ```java
-// 手动选择 hostkey
 HostHolder.changeHost("remote-1", false);
-try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.docx"));
-     InputStream inputStream2 = Files.newInputStream(Paths.get("D:\\aptx4869.pdf"));
-     InputStream inputStream3 = Files.newInputStream(Paths.get("D:\\aptx4869.doc"))) {
-  sftpTemplate.upload(inputStream1, "/home/haibara/aptx4869.docx");
-  sftpTemplate.upload(inputStream2, "haibara/aptx4869.pdf");
-  sftpTemplate.upload(inputStream3, "aptx4869.doc");
+try {
+  sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
+  sftpTemplate.upload("D:\\aptx4869.pdf", "haibara/aptx4869.pdf");
+  sftpTemplate.upload("D:\\aptx4869.doc", "aptx4869.doc");
 } finally {
   HostHolder.clearHostKey();
 }
@@ -229,9 +251,7 @@ try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.doc
 // 获取所有以“remote-”开头的 hostkey
 for (String hostKey : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
   HostHolder.changeHost(hostKey);
-  try (InputStream inputStream1 = Files.newInputStream(Paths.get("D:\\aptx4869.docx"))) {
-    sftpTemplate.upload(inputStream1, "/home/haibara/aptx4869.docx");
-  }
+  sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
 }
 ```
 

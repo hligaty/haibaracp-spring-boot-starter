@@ -19,12 +19,10 @@ import java.util.Map;
  */
 public class SftpPool {
   private static final Logger log = LoggerFactory.getLogger(SftpPool.class);
-  private boolean uniqueHost;
   private GenericObjectPool<SftpClient> internalPool;
   private GenericKeyedObjectPool<String, SftpClient> internalKeyedPool;
 
   public SftpPool(ClientProperties clientProperties, PoolProperties poolProperties) {
-    uniqueHost = true;
     this.internalPool = new GenericObjectPool<>(new PooledClientFactory(clientProperties), getPoolConfig(poolProperties));
     log.info("HaibaraCP: Created");
   }
@@ -34,38 +32,74 @@ public class SftpPool {
     log.info("HaibaraCP: Created");
   }
 
-  public SftpClient borrowObject() throws Exception {
-    return uniqueHost ? internalPool.borrowObject() : internalKeyedPool.borrowObject(HostHolder.getHostKey());
-  }
-
-  public void invalidateObject(SftpClient sftpClient) throws Exception {
-    if (uniqueHost) {
-      internalPool.invalidateObject(sftpClient);
-    } else {
-      String hostKey = HostHolder.getHostKey();
-      HostHolder.clear();
-      internalKeyedPool.invalidateObject(hostKey, sftpClient);
+  public SftpClient borrowObject() {
+    try {
+      return internalPool.borrowObject();
+    } catch (Exception e) {
+      throw new PoolException("Could not get a resource from the pool", e);
     }
   }
 
-  public void returnObject(SftpClient sftpClient) {
-    if (uniqueHost) {
+  public SftpClient borrowObject(String key) {
+    try {
+      return internalKeyedPool.borrowObject(key);
+    } catch (Exception e) {
+      throw new PoolException("Could not get a resource from the pool", e);
+    }
+  }
+
+  public boolean invalidateObject(SftpClient sftpClient) {
+    try {
+      internalPool.invalidateObject(sftpClient);
+      return true;
+    } catch (Exception e) {
+      throw new PoolException("Could not invalidate the broken resource", e);
+    }
+  }
+
+  public boolean invalidateObject(String key, SftpClient sftpClient) {
+    try {
+      internalKeyedPool.invalidateObject(key, sftpClient);
+      return true;
+    } catch (Exception e) {
+      throw new PoolException("Could not invalidate the broken resource", e);
+    }
+  }
+
+  public boolean returnObject(SftpClient sftpClient) {
+    try {
       internalPool.returnObject(sftpClient);
-    } else {
-      String hostKey = HostHolder.getHostKey();
-      HostHolder.clear();
-      internalKeyedPool.returnObject(hostKey, sftpClient);
+      return true;
+    } catch (Exception e) {
+      throw new PoolException("Could not return a resource from the pool", e);
+    }
+  }
+
+  public boolean returnObject(String key, SftpClient sftpClient) {
+    try {
+      internalKeyedPool.returnObject(key, sftpClient);
+      return true;
+    } catch (Exception e) {
+      throw new PoolException("Could not return a resource from the pool", e);
     }
   }
 
   @PreDestroy
   public void close() {
-    if (uniqueHost) {
-      internalPool.close();
-    } else {
-      internalKeyedPool.close();
+    try {
+      if (isUniqueHost()) {
+        internalPool.close();
+      } else {
+        internalKeyedPool.close();
+      }
+      log.info("HaibaraCP: Closed");
+    } catch (Exception e) {
+      throw new PoolException("Could not destroy the pool", e);
     }
-    log.info("HaibaraCP: Closed");
+  }
+
+  public boolean isUniqueHost() {
+    return internalPool != null;
   }
 
   private static class PooledClientFactory extends BasePooledObjectFactory<SftpClient> {
