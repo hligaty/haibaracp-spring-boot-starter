@@ -2,12 +2,12 @@ package io.github.hligaty.haibaracp.core;
 
 import io.github.hligaty.haibaracp.config.ClientProperties;
 import io.github.hligaty.haibaracp.config.PoolProperties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.PreDestroy;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Map;
  * @author hligaty
  */
 public class SftpPool {
-  private static final Logger log = LoggerFactory.getLogger(SftpPool.class);
+  private static final Log log = LogFactory.getLog(SftpPool.class);
   private GenericObjectPool<SftpClient> internalPool;
   private GenericKeyedObjectPool<String, SftpClient> internalKeyedPool;
 
@@ -32,53 +32,33 @@ public class SftpPool {
     log.info("HaibaraCP: Created");
   }
 
-  public SftpClient borrowObject() {
-    try {
-      return internalPool.borrowObject();
-    } catch (Exception e) {
-      throw new PoolException("Could not get a resource from the pool", e);
-    }
-  }
-
   public SftpClient borrowObject(String key) {
     try {
-      return internalKeyedPool.borrowObject(key);
+      return key == null ? internalPool.borrowObject() : internalKeyedPool.borrowObject(key);
     } catch (Exception e) {
       throw new PoolException("Could not get a resource from the pool", e);
     }
   }
 
-  public boolean invalidateObject(SftpClient sftpClient) {
+  public void invalidateObject(String key, SftpClient sftpClient) {
     try {
-      internalPool.invalidateObject(sftpClient);
-      return true;
+      if (key == null) {
+        internalPool.invalidateObject(sftpClient);
+      } else {
+        internalKeyedPool.invalidateObject(key, sftpClient);
+      }
     } catch (Exception e) {
       throw new PoolException("Could not invalidate the broken resource", e);
     }
   }
 
-  public boolean invalidateObject(String key, SftpClient sftpClient) {
+  public void returnObject(String key, SftpClient sftpClient) {
     try {
-      internalKeyedPool.invalidateObject(key, sftpClient);
-      return true;
-    } catch (Exception e) {
-      throw new PoolException("Could not invalidate the broken resource", e);
-    }
-  }
-
-  public boolean returnObject(SftpClient sftpClient) {
-    try {
-      internalPool.returnObject(sftpClient);
-      return true;
-    } catch (Exception e) {
-      throw new PoolException("Could not return a resource from the pool", e);
-    }
-  }
-
-  public boolean returnObject(String key, SftpClient sftpClient) {
-    try {
-      internalKeyedPool.returnObject(key, sftpClient);
-      return true;
+      if (key == null) {
+        internalPool.returnObject(sftpClient);
+      } else {
+        internalKeyedPool.returnObject(key, sftpClient);
+      }
     } catch (Exception e) {
       throw new PoolException("Could not return a resource from the pool", e);
     }
@@ -111,7 +91,7 @@ public class SftpPool {
     }
 
     @Override
-    public SftpClient create() throws Exception {
+    public SftpClient create() {
       return new SftpClient(clientProperties);
     }
 
@@ -122,7 +102,7 @@ public class SftpPool {
 
     @Override
     public boolean validateObject(PooledObject<SftpClient> p) {
-      return p.getObject().validateConnect();
+      return p.getObject().test();
     }
 
     @Override
@@ -141,7 +121,7 @@ public class SftpPool {
     }
 
     @Override
-    public SftpClient create(String key) throws Exception {
+    public SftpClient create(String key) {
       return new SftpClient(clientPropertiesMap.get(key));
     }
 
@@ -152,7 +132,7 @@ public class SftpPool {
 
     @Override
     public boolean validateObject(String key, PooledObject<SftpClient> p) {
-      return p.getObject().validateConnect();
+      return p.getObject().test();
     }
 
     @Override
@@ -166,7 +146,6 @@ public class SftpPool {
     config.setMinIdle(poolProperties.getMinIdle());
     config.setMaxIdle(poolProperties.getMaxIdle());
     config.setMaxTotal(poolProperties.getMaxActive());
-    log.info("HaibaraCP :" + poolProperties);
     return config;
   }
 
@@ -176,7 +155,6 @@ public class SftpPool {
     config.setMaxIdlePerKey(poolProperties.getMaxIdle());
     config.setMaxTotalPerKey(poolProperties.getMaxActivePerKey());
     config.setMaxTotal(poolProperties.getMaxActive());
-    log.info("HaibaraCP :" + poolProperties);
     return config;
   }
 

@@ -44,6 +44,7 @@ HaibaraCP 是一个 SFTP 的 SpringBoot Starter，支持密码和密钥登录以
 
 ```yml
 sftp:
+  enabled-log: false
   host: localhost
   port: 22
   username: root
@@ -54,6 +55,7 @@ sftp:
 
 ```yml
 sftp:
+  enabled-log: false
   host: localhost
   port: 22
   username: root
@@ -67,8 +69,9 @@ sftp:
 
 比如两个 Host，一个密码登录，一个密钥登录：
 
-```
+```yml
 sftp:
+  enabled-log: false
   hosts:
     # 地址的名字，你可以通过它来切换连接
     remote-1:

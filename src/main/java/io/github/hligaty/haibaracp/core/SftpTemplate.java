@@ -2,15 +2,12 @@ package io.github.hligaty.haibaracp.core;
 
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.SftpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
  * @author hligaty
  */
 public class SftpTemplate {
-  private static final Logger log = LoggerFactory.getLogger(SftpTemplate.class);
   private final SftpPool sftpPool;
 
   public SftpTemplate(SftpPool sftpPool) {
@@ -43,24 +40,15 @@ public class SftpTemplate {
     String hostKey = sftpPool.isUniqueHost() ? null : HostHolder.getHostKey();
     SftpClient sftpClient = null;
     try {
-      sftpClient = hostKey == null ? sftpPool.borrowObject() : sftpPool.borrowObject(hostKey);
-      if (log.isDebugEnabled()) {
-        log.debug("{}: Get client.", sftpClient.getClientInfo());
-      }
+      sftpClient = sftpPool.borrowObject(hostKey);
       return action.doInSftp(sftpClient.getChannelSftp());
     } finally {
       HostHolder.clear();
       if (sftpClient != null) {
-        boolean result = sftpClient.reset();
-        // var 'useless' is just for the code to look good
-        boolean useless;
-        if (result) {
-          useless = hostKey == null ? sftpPool.returnObject(sftpClient) : sftpPool.returnObject(hostKey, sftpClient);
+        if (sftpClient.reset()) {
+          sftpPool.returnObject(hostKey, sftpClient);
         } else {
-          useless = hostKey == null ? sftpPool.invalidateObject(sftpClient) : sftpPool.invalidateObject(hostKey, sftpClient);
-        }
-        if (log.isDebugEnabled()) {
-          log.debug(result ? "{}: Return client." : "{}: Invalidate client.", sftpClient.getClientInfo());
+          sftpPool.invalidateObject(hostKey, sftpClient);
         }
       }
     }

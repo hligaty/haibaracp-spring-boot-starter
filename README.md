@@ -44,6 +44,7 @@ See the automatic prompt of the development tool for detailed description of con
 
 ```yml
 sftp:
+  enabled-log: false
   host: localhost
   port: 22
   username: root
@@ -54,6 +55,7 @@ sftp:
 
 ```yml
 sftp:
+  enabled-log: false
   host: localhost
   port: 22
   username: root
@@ -67,8 +69,9 @@ sftp:
 
 For example, two hosts, one password login and one key login:
 
-```
+```yml
 sftp:
+  enabled-log: false
   hosts:
     remote-1:
       host: 127.0.0.1

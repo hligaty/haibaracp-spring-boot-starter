@@ -42,6 +42,11 @@ public class ClientProperties {
   private String kex;
 
   /**
+   * Enable jsch log, Cannot be individually turned on or off for one of multiple hosts.
+   */
+  private boolean enabledLog = false;
+
+  /**
    * Configure multiple hosts.
    */
   private LinkedHashMap<String, ClientProperties> hosts;
@@ -125,5 +130,13 @@ public class ClientProperties {
             .add("kex='" + kex + "'")
             .add("hosts=" + hosts)
             .toString();
+  }
+
+  public boolean isEnabledLog() {
+    return enabledLog;
+  }
+
+  public void setEnabledLog(boolean enabledLog) {
+    this.enabledLog = enabledLog;
   }
 }
