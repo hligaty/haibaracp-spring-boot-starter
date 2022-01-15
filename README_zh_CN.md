@@ -28,7 +28,7 @@ HaibaraCP 是一个 SFTP 的 SpringBoot Starter，支持密码和密钥登录以
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -207,7 +207,7 @@ LsEntry[] list5 = sftpTemplate.list("haibara");
 
 ### execute
 
-`execute(SftpCallback<T> action)` 和 `executeWithoutResult(SftpCallbackWithoutResult action)` 用于自定义 SFTP 操作，比如查看 SFTP 默认目录（关于 ChannelSftp 的其他用法请参考 jsch 的 API）：
+`execute(SftpCallback<T> action)` 用于执行自定义 SFTP 操作，比如查看 SFTP 默认目录（关于 ChannelSftp 的其他用法请参考 jsch 的 API）：
 
 ```java
 String dir = sftpTemplate.execute(ChannelSftp::pwd);
@@ -215,7 +215,7 @@ String dir = sftpTemplate.execute(ChannelSftp::pwd);
 
 ### executeWithoutResult
 
-`executeWithoutResult(SftpCallbackWithoutResult action)`用于自定义没有返回值的SFTP操作，比如查看默认的SFTP目录（ChannelSftp的其他用途，请参考jsch的API）：
+`executeWithoutResult(SftpCallbackWithoutResult action)`用于执行自定义没有返回值的SFTP操作，比如查看默认的SFTP目录（ChannelSftp的其他用途，请参考 jsch 的 API）：
 
 ```java
 sftpTemplate.executeWithoutResult(channelSftp -> System.out.println(channelSftp.getHome()));

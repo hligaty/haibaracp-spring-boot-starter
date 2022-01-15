@@ -28,7 +28,7 @@ Spring boot 2 and Commons-Pool 2.6.0 and above are supported.
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -210,7 +210,7 @@ LsEntry[] list5 = sftpTemplate.list("haibara");
 
 ### execute
 
-`execute(SftpCallback action)` is used to customize SFTP operations,  such as viewing the SFTP default directory (for other uses of  ChannelSftp, please refer to the API of jsch):
+`execute(SftpCallback action)` is used to perform custom SFTP operations,  such as viewing the SFTP default directory (for other uses of  ChannelSftp, please refer to the API of jsch):
 
 ```java
 String dir = sftpTemplate.execute(ChannelSftp::pwd);
@@ -218,7 +218,7 @@ String dir = sftpTemplate.execute(ChannelSftp::pwd);
 
 ### executeWithoutResult
 
-`executeWithoutResult(SftpCallbackWithoutResult action)` is used to customize SFTP operations with no return value, such as viewing the default SFTP directory (for other uses of ChannelSftp, please refer to jsch&#39;s API):
+`executeWithoutResult(SftpCallbackWithoutResult action)` is used to perform custom SFTP operations with no return value, such as viewing the default SFTP directory (for other uses of ChannelSftp, please refer to jsch&#39;s API):
 
 ```java
 sftpTemplate.executeWithoutResult(channelSftp -> System.out.println(channelSftp.getHome()));

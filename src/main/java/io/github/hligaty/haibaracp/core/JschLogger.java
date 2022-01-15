@@ -6,7 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import com.jcraft.jsch.Logger;
 
 public class JschLogger implements Logger {
-  private static final Log LOGGER = LogFactory.getLog("com.jcraft.jsch");
+  private static final Log log = LogFactory.getLog("com.jcraft.jsch");
   private final boolean enabled;
 
   public JschLogger(boolean enabled) {
@@ -19,15 +19,15 @@ public class JschLogger implements Logger {
     }
     switch (level) {
       case Logger.INFO:
-        return LOGGER.isInfoEnabled();
+        return log.isInfoEnabled();
       case Logger.WARN:
-        return LOGGER.isWarnEnabled();
+        return log.isWarnEnabled();
       case Logger.DEBUG:
-        return LOGGER.isDebugEnabled();
+        return log.isDebugEnabled();
       case Logger.ERROR:
-        return LOGGER.isErrorEnabled();
+        return log.isErrorEnabled();
       case Logger.FATAL:
-        return LOGGER.isFatalEnabled();
+        return log.isFatalEnabled();
       default:
         return false;
     }
@@ -36,19 +36,19 @@ public class JschLogger implements Logger {
   public void log(int level, String message) {
     switch (level) {
       case Logger.INFO:
-        LOGGER.info(message);
+        log.info(message);
         break;
       case Logger.WARN:
-        LOGGER.warn(message);
+        log.warn(message);
         break;
       case Logger.DEBUG:
-        LOGGER.debug(message);
+        log.debug(message);
         break;
       case Logger.ERROR:
-        LOGGER.error(message);
+        log.error(message);
         break;
       case Logger.FATAL:
-        LOGGER.fatal(message);
+        log.fatal(message);
         break;
       default:
         break;
