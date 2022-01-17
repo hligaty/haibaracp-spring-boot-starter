@@ -17,6 +17,11 @@ public class SftpClient {
    */
   private final String originalDir;
 
+  static {
+    // disable Kerberos
+    JSch.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
+  }
+
   public SftpClient(ClientProperties clientProperties) {
     try {
       JSch jsch = new JSch();
