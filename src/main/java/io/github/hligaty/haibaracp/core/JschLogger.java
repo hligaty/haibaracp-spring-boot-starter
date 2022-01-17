@@ -13,6 +13,7 @@ public class JschLogger implements Logger {
     this.enabled = enabled;
   }
 
+  @Override
   public boolean isEnabled(int level) {
     if (!enabled) {
       return false;
@@ -33,6 +34,7 @@ public class JschLogger implements Logger {
     }
   }
 
+  @Override
   public void log(int level, String message) {
     switch (level) {
       case Logger.INFO:

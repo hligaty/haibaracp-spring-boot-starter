@@ -21,6 +21,7 @@ public class SftpTemplate {
    * @throws SftpException an IO exception during remote interaction.
    */
   public void executeWithoutResult(SftpCallbackWithoutResult action) throws SftpException {
+    Assert.notNull(action, "Callback object must not be null");
     this.execute(channelSftp -> {
       action.doInSftp(channelSftp);
       return null;
