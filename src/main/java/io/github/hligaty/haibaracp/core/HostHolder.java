@@ -34,10 +34,7 @@ public class HostHolder {
    */
   @Deprecated
   public static Set<String> hostKeys() {
-    if (hostNames == null) {
-      throw new NullPointerException("Not multiple hosts");
-    }
-    return hostNames;
+    return hostNames();
   }
 
   /**
@@ -62,10 +59,7 @@ public class HostHolder {
    */
   @Deprecated
   public static Set<String> hostKeys(Predicate<String> predicate) {
-    if (hostNames == null) {
-      throw new NullPointerException("Not multiple hosts");
-    }
-    return hostNames.stream().filter(predicate).collect(Collectors.toSet());
+    return hostNames(predicate);
   }
 
   /**
