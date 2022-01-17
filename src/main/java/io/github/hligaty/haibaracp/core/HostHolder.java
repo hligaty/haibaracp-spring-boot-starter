@@ -15,13 +15,13 @@ import java.util.stream.Collectors;
  */
 public class HostHolder {
   private static final ThreadLocal<Tuple2> THREADLOCAL = new ThreadLocal<>();
-  private static Set<String> hostKeys;
+  private static Set<String> hostNames;
 
   public static LinkedHashMap<String, ClientProperties> initHostKeys(LinkedHashMap<String, ClientProperties> clientPropertiesMap) {
-    if (hostKeys != null) {
-      throw new UnsupportedOperationException("HostHolder hostKeys unsupported modify");
+    if (hostNames != null) {
+      throw new UnsupportedOperationException("HostHolder hostNames unsupported modify");
     }
-    hostKeys = Collections.unmodifiableSet(clientPropertiesMap.keySet());
+    hostNames = Collections.unmodifiableSet(clientPropertiesMap.keySet());
     return clientPropertiesMap;
   }
 
@@ -30,12 +30,42 @@ public class HostHolder {
    *
    * @return host keys.
    * @see ClientProperties#getHosts()
+   * @deprecated Use {@link #hostNames()}.
    */
+  @Deprecated
   public static Set<String> hostKeys() {
-    if (hostKeys == null) {
+    if (hostNames == null) {
       throw new NullPointerException("Not multiple hosts");
     }
-    return hostKeys;
+    return hostNames;
+  }
+
+  /**
+   * Return all host keys.
+   *
+   * @return host keys.
+   * @see ClientProperties#getHosts()
+   */
+  public static Set<String> hostNames() {
+    if (hostNames == null) {
+      throw new NullPointerException("Not multiple hosts");
+    }
+    return hostNames;
+  }
+
+  /**
+   * Return the filtered host key.
+   *
+   * @param predicate filter condition.
+   * @return host keys.
+   * @deprecated Use {@link #hostNames(Predicate)}.
+   */
+  @Deprecated
+  public static Set<String> hostKeys(Predicate<String> predicate) {
+    if (hostNames == null) {
+      throw new NullPointerException("Not multiple hosts");
+    }
+    return hostNames.stream().filter(predicate).collect(Collectors.toSet());
   }
 
   /**
@@ -44,32 +74,32 @@ public class HostHolder {
    * @param predicate filter condition.
    * @return host keys.
    */
-  public static Set<String> hostKeys(Predicate<String> predicate) {
-    if (hostKeys == null) {
+  public static Set<String> hostNames(Predicate<String> predicate) {
+    if (hostNames == null) {
       throw new NullPointerException("Not multiple hosts");
     }
-    return hostKeys.stream().filter(predicate).collect(Collectors.toSet());
+    return hostNames.stream().filter(predicate).collect(Collectors.toSet());
   }
 
   /**
    * Switch the host connect currently bound to the thread. Only switch once.
    *
-   * @param hostKey host key.
+   * @param hostName host key.
    * @see ClientProperties#getHosts()
    */
-  public static void changeHost(String hostKey) {
-    THREADLOCAL.set(new Tuple2(hostKey, true));
+  public static void changeHost(String hostName) {
+    THREADLOCAL.set(new Tuple2(hostName, true));
   }
 
   /**
    * Switch the host connect currently bound to the thread.
    *
-   * @param hostKey host key.
+   * @param hostName host key.
    * @param autoClose If true, the thread bound value is automatically cleared.
    * @see ClientProperties#getHosts()
    */
-  public static void changeHost(String hostKey, boolean autoClose) {
-    THREADLOCAL.set(new Tuple2(hostKey, autoClose));
+  public static void changeHost(String hostName, boolean autoClose) {
+    THREADLOCAL.set(new Tuple2(hostName, autoClose));
   }
 
   /**
@@ -84,7 +114,7 @@ public class HostHolder {
     if (tuple2 == null) {
       throw new NullPointerException("Host key not set");
     }
-    return tuple2.hostKey;
+    return tuple2.hostName;
   }
 
   protected static void clear() {
@@ -95,11 +125,11 @@ public class HostHolder {
   }
 
   static class Tuple2 {
-    public String hostKey;
+    public String hostName;
     public boolean autoClose;
 
-    public Tuple2(String hostKey, boolean autoClose) {
-      this.hostKey = hostKey;
+    public Tuple2(String hostName, boolean autoClose) {
+      this.hostName = hostName;
       this.autoClose = autoClose;
     }
   }

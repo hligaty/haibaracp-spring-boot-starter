@@ -228,7 +228,7 @@ sftpTemplate.executeWithoutResult(channelSftp -> System.out.println(channelSftp.
 
 To use SftpTemplate in the connection pool of multiple connections from different hosts, you need to specify the connection to be used for HaibaraCP, otherwise a `NullPointerException` will be thrown. The following describes how to specify the connection (examples use the configuration in the `Configuration-Multiple Host` chapter to explain ):
 
-- `HostHolder.changeHost(string)`: Specify the connection to be used next  time through hostkey (that is, the key in the map under the specified  configuration file sftp.hosts. The following hostkey will not be  explained repeatedly). Note that it can only specify the next  connection! ! !
+- `HostHolder.changeHost(string)`: Specify the connection to be used next  time through hostName (that is, the key in the map under the specified  configuration file sftp.hosts. The following hostName will not be  explained repeatedly). Note that it can only specify the next  connection! ! !
 
 ```
 HostHolder.changeHost("remote-1");
@@ -238,7 +238,7 @@ sftpTemplate.execute(ChannelSftp::pwd);
 sftpTemplate.execute(ChannelSftp::pwd);
 ```
 
-- `HostHolder.changeHost(string, boolean)`: It is used when calling the  same host connection continuously to avoid setting the hostkey once when executing SftpTemplate once. Pay attention to use with  `HostHolder.clearHostKey()`! ! !
+- `HostHolder.changeHost(string, boolean)`: It is used when calling the  same host connection continuously to avoid setting the hostName once when executing SftpTemplate once. Pay attention to use with  `HostHolder.clearHostKey()`! ! !
 
 ```java
 HostHolder.changeHost("remote-1", false);
@@ -251,12 +251,12 @@ try {
 }
 ```
 
--  `HostHolder. Hostkeys() ` and ` hostholder Hostkeys (predict < string >) `: get the keys of all or filtered host connections. The two connection switching methods described above need to display the specified hostkey, but sometimes the configured n host connections need to be executed in batch. At this time, all or filtered hostkey sets can be obtained through this method
+-  `HostHolder. Hostkeys() ` and ` hostholder Hostkeys (predict < string >) `: get the Names of all or filtered host connections. The two connection switching methods described above need to display the specified hostName, but sometimes the configured n host connections need to be executed in batch. At this time, all or filtered hostName sets can be obtained through this method
 
 ```java
 // Get all hostkeys starting with "remote-"
-for (String hostKey : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
-  HostHolder.changeHost(hostKey);
+for (String hostName : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
+  HostHolder.changeHost(hostName);
   sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
 }
 ```

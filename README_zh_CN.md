@@ -225,7 +225,7 @@ sftpTemplate.executeWithoutResult(channelSftp -> System.out.println(channelSftp.
 
 在多 Host 使用  SftpTemplate 需要为 HaibaraCP 指定将要使用的连接，否则将抛出 `NullPointerException`，下面介绍了如何指定连接（例子使用 `配置-多Host` 章节中的配置进行说明）：
 
-- `HostHolder.changeHost(string)` ：通过 hostkey （即指定配置文件 sftp.hosts 下 map 中的 key。后面的 hostkey 不再重复说明） 指定下次使用的连接。注意它只能指定下一次的连接！！！
+- `HostHolder.changeHost(string)` ：通过 hostName （即指定配置文件 sftp.hosts 下 map 中的 key。后面的 hostName 不再重复说明） 指定下次使用的连接。注意它只能指定下一次的连接！！！
 
 ```
 HostHolder.changeHost("remote-1");
@@ -235,7 +235,7 @@ sftpTemplate.execute(ChannelSftp::pwd);
 sftpTemplate.execute(ChannelSftp::pwd);
 ```
 
-- `HostHolder.changeHost(string, boolean)`：连续调用相同 host 连接时使用，避免执行一次 SftpTemplate 就要设置一次 hostkey。注意要配合 `HostHolder.clearHostKey()` 使用！！！
+- `HostHolder.changeHost(string, boolean)`：连续调用相同 host 连接时使用，避免执行一次 SftpTemplate 就要设置一次 hostName。注意要配合 `HostHolder.clearHostKey()` 使用！！！
 
 ```java
 HostHolder.changeHost("remote-1", false);
@@ -248,12 +248,12 @@ try {
 }
 ```
 
--  `HostHolder.hostKeys()` 与 `HostHolder.hostKeys(Predicate<String>)`：获取所有或过滤后的 host 连接的 key。前面介绍的两种切换连接的方式都要显示指定 hostkey，但有时需要批量执行配置的 n 个 host 连接，此时可以通过该方法获取所有或过滤后的 hostkey 集合。
+-  `HostHolder.hostKeys()` 与 `HostHolder.hostKeys(Predicate<String>)`：获取所有或过滤后的 host 连接的 name。前面介绍的两种切换连接的方式都要显示指定 hostName，但有时需要批量执行配置的 n 个 host 连接，此时可以通过该方法获取所有或过滤后的 hostName 集合。
 
 ```java
-// 获取所有以“remote-”开头的 hostkey
-for (String hostKey : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
-  HostHolder.changeHost(hostKey);
+// 获取所有以“remote-”开头的 hostName
+for (String hostName : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
+  HostHolder.changeHost(hostName);
   sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
 }
 ```
