@@ -98,8 +98,17 @@ public class HostHolder {
 
   /**
    * Clear the hostkey bound to the thread.
+   * @deprecated Use {@link #clearHost()}.
    */
+  @Deprecated
   public static void clearHostKey() {
+    clearHost();
+  }
+
+  /**
+   * Clear the hostkey bound to the thread.
+   */
+  public static void clearHost() {
     THREADLOCAL.remove();
   }
 

@@ -28,7 +28,7 @@ Spring boot 2 and Commons-Pool 2.6.0 and above are supported.
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -230,7 +230,7 @@ To use SftpTemplate in the connection pool of multiple connections from differen
 
 - `HostHolder.changeHost(string)`: Specify the connection to be used next  time through hostName (that is, the key in the map under the specified  configuration file sftp.hosts. The following hostName will not be  explained repeatedly). Note that it can only specify the next  connection! ! !
 
-```
+```java
 HostHolder.changeHost("remote-1");
 // success
 sftpTemplate.execute(ChannelSftp::pwd);
@@ -238,7 +238,7 @@ sftpTemplate.execute(ChannelSftp::pwd);
 sftpTemplate.execute(ChannelSftp::pwd);
 ```
 
-- `HostHolder.changeHost(string, boolean)`: It is used when calling the  same host connection continuously to avoid setting the hostName once when executing SftpTemplate once. Pay attention to use with  `HostHolder.clearHostKey()`! ! !
+- `HostHolder.changeHost(string, boolean)`: It is used when calling the  same host connection continuously to avoid setting the hostName once when executing SftpTemplate once. Pay attention to use with  `HostHolder.clearHost()`! ! !
 
 ```java
 HostHolder.changeHost("remote-1", false);
@@ -247,15 +247,15 @@ try {
   sftpTemplate.upload("D:\\aptx4869.pdf", "haibara/aptx4869.pdf");
   sftpTemplate.upload("D:\\aptx4869.doc", "aptx4869.doc");
 } finally {
-  HostHolder.clearHostKey();
+  HostHolder.clearHost();
 }
 ```
 
--  `HostHolder. Hostkeys() ` and ` hostholder Hostkeys (predict < string >) `: get the Names of all or filtered host connections. The two connection switching methods described above need to display the specified hostName, but sometimes the configured n host connections need to be executed in batch. At this time, all or filtered hostName sets can be obtained through this method
+-  `HostHolder.hostNames() ` and ` HostHolder.hostNames(predict < string >) `: get the Names of all or filtered host connections. The two connection switching methods described above need to display the specified hostName, but sometimes the configured n host connections need to be executed in batch. At this time, all or filtered hostName sets can be obtained through this method
 
 ```java
-// Get all hostkeys starting with "remote-"
-for (String hostName : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
+// Get all host Name starting with "remote-"
+for (String hostName : HostHolder.hostNames(s -> s.startsWith("remote-"))) {
   HostHolder.changeHost(hostName);
   sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
 }

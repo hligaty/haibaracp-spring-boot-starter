@@ -227,7 +227,7 @@ sftpTemplate.executeWithoutResult(channelSftp -> System.out.println(channelSftp.
 
 - `HostHolder.changeHost(string)` ：通过 hostName （即指定配置文件 sftp.hosts 下 map 中的 key。后面的 hostName 不再重复说明） 指定下次使用的连接。注意它只能指定下一次的连接！！！
 
-```
+```java
 HostHolder.changeHost("remote-1");
 // 成功打印 remote-1 对应连接的原始目录
 sftpTemplate.execute(ChannelSftp::pwd);
@@ -235,7 +235,7 @@ sftpTemplate.execute(ChannelSftp::pwd);
 sftpTemplate.execute(ChannelSftp::pwd);
 ```
 
-- `HostHolder.changeHost(string, boolean)`：连续调用相同 host 连接时使用，避免执行一次 SftpTemplate 就要设置一次 hostName。注意要配合 `HostHolder.clearHostKey()` 使用！！！
+- `HostHolder.changeHost(string, boolean)`：连续调用相同 host 连接时使用，避免执行一次 SftpTemplate 就要设置一次 hostName。注意要配合 `HostHolder.clearHost()` 使用！！！
 
 ```java
 HostHolder.changeHost("remote-1", false);
@@ -244,15 +244,15 @@ try {
   sftpTemplate.upload("D:\\aptx4869.pdf", "haibara/aptx4869.pdf");
   sftpTemplate.upload("D:\\aptx4869.doc", "aptx4869.doc");
 } finally {
-  HostHolder.clearHostKey();
+  HostHolder.clearHost();
 }
 ```
 
--  `HostHolder.hostKeys()` 与 `HostHolder.hostKeys(Predicate<String>)`：获取所有或过滤后的 host 连接的 name。前面介绍的两种切换连接的方式都要显示指定 hostName，但有时需要批量执行配置的 n 个 host 连接，此时可以通过该方法获取所有或过滤后的 hostName 集合。
+-  `HostHolder.hostNames()` 与 `HostHolder.hostNames(Predicate<String>)`：获取所有或过滤后的 host 连接的 name。前面介绍的两种切换连接的方式都要显示指定 hostName，但有时需要批量执行配置的 n 个 host 连接，此时可以通过该方法获取所有或过滤后的 hostName 集合。
 
 ```java
 // 获取所有以“remote-”开头的 hostName
-for (String hostName : HostHolder.hostKeys(s -> s.startsWith("remote-"))) {
+for (String hostName : HostHolder.hostNames(s -> s.startsWith("remote-"))) {
   HostHolder.changeHost(hostName);
   sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
 }
