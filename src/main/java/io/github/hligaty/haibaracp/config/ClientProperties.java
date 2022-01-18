@@ -37,15 +37,17 @@ public class ClientProperties {
    */
   private String password = "";
   /**
+   * Specifies the timeout period for session creation, in milliseconds.
+   */
+  private int timeout = 0;
+  /**
    * SSH kex algorithms.
    */
   private String kex;
-
   /**
    * Enable jsch log, Cannot be individually turned on or off for one of multiple hosts.
    */
   private boolean enabledLog = false;
-
   /**
    * Configure multiple hosts.
    */
@@ -127,7 +129,9 @@ public class ClientProperties {
             .add("strictHostKeyChecking=" + strictHostKeyChecking)
             .add("keyPath='" + keyPath + "'")
             .add("password='" + password + "'")
+            .add("timeout=" + timeout)
             .add("kex='" + kex + "'")
+            .add("enabledLog=" + enabledLog)
             .add("hosts=" + hosts)
             .toString();
   }
@@ -138,5 +142,13 @@ public class ClientProperties {
 
   public void setEnabledLog(boolean enabledLog) {
     this.enabledLog = enabledLog;
+  }
+
+  public int getTimeout() {
+    return timeout;
+  }
+
+  public void setTimeout(int timeout) {
+    this.timeout = timeout;
   }
 }

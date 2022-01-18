@@ -37,7 +37,7 @@ public class SftpClient {
       if (StringUtils.hasText(clientProperties.getKex())) {
         session.setConfig("kex", clientProperties.getKex());
       }
-      session.connect();
+      session.connect(clientProperties.getTimeout());
       channelSftp = (ChannelSftp) session.openChannel("sftp");
       channelSftp.connect();
       originalDir = channelSftp.pwd();
