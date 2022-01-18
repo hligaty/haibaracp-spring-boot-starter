@@ -28,7 +28,7 @@ Spring boot 2 and Commons-Pool 2.6.0 and above are supported.
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>

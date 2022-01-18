@@ -37,9 +37,9 @@ public class ClientProperties {
    */
   private String password = "";
   /**
-   * Specifies the timeout period for session creation, in milliseconds.
+   * Specifies the timeout period for new session creation, in milliseconds.
    */
-  private int timeout = 0;
+  private int connectTimeout = 0;
   /**
    * SSH kex algorithms.
    */
@@ -129,7 +129,7 @@ public class ClientProperties {
             .add("strictHostKeyChecking=" + strictHostKeyChecking)
             .add("keyPath='" + keyPath + "'")
             .add("password='" + password + "'")
-            .add("timeout=" + timeout)
+            .add("connectTimeout=" + connectTimeout)
             .add("kex='" + kex + "'")
             .add("enabledLog=" + enabledLog)
             .add("hosts=" + hosts)
@@ -144,11 +144,11 @@ public class ClientProperties {
     this.enabledLog = enabledLog;
   }
 
-  public int getTimeout() {
-    return timeout;
+  public int getConnectTimeout() {
+    return connectTimeout;
   }
 
-  public void setTimeout(int timeout) {
-    this.timeout = timeout;
+  public void setConnectTimeout(int connectTimeout) {
+    this.connectTimeout = connectTimeout;
   }
 }

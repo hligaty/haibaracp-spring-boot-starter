@@ -26,21 +26,9 @@ public class HostHolder {
   }
 
   /**
-   * Return all host keys.
+   * Return all host names.
    *
-   * @return host keys.
-   * @see ClientProperties#getHosts()
-   * @deprecated Use {@link #hostNames()}.
-   */
-  @Deprecated
-  public static Set<String> hostKeys() {
-    return hostNames();
-  }
-
-  /**
-   * Return all host keys.
-   *
-   * @return host keys.
+   * @return host names.
    * @see ClientProperties#getHosts()
    */
   public static Set<String> hostNames() {
@@ -51,22 +39,10 @@ public class HostHolder {
   }
 
   /**
-   * Return the filtered host key.
+   * Return the filtered host name.
    *
    * @param predicate filter condition.
-   * @return host keys.
-   * @deprecated Use {@link #hostNames(Predicate)}.
-   */
-  @Deprecated
-  public static Set<String> hostKeys(Predicate<String> predicate) {
-    return hostNames(predicate);
-  }
-
-  /**
-   * Return the filtered host key.
-   *
-   * @param predicate filter condition.
-   * @return host keys.
+   * @return host names.
    */
   public static Set<String> hostNames(Predicate<String> predicate) {
     if (hostNames == null) {
@@ -97,16 +73,7 @@ public class HostHolder {
   }
 
   /**
-   * Clear the hostkey bound to the thread.
-   * @deprecated Use {@link #clearHost()}.
-   */
-  @Deprecated
-  public static void clearHostKey() {
-    clearHost();
-  }
-
-  /**
-   * Clear the hostkey bound to the thread.
+   * Clear the host bound to the thread.
    */
   public static void clearHost() {
     THREADLOCAL.remove();
