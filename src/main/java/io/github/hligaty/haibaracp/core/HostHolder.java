@@ -112,7 +112,7 @@ public class HostHolder {
     THREADLOCAL.remove();
   }
 
-  protected static String getHostKey() {
+  protected static String getHostName() {
     Tuple2 tuple2 = THREADLOCAL.get();
     if (tuple2 == null) {
       throw new NullPointerException("Host key not set");
