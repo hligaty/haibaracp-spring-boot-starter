@@ -258,9 +258,50 @@ for (String hostName : HostHolder.hostNames(s -> s.startsWith("remote-"))) {
 }
 ```
 
-## 常见问题
+## 密钥格式
 
-- JSchException: invalid privatekey：https://github.com/mwiede/jsch/issues/12#issuecomment-662863338
+OpenSSH 自 7.8 起，默认的密钥格式由
+
+```
+-----BEGIN RSA PRIVATE KEY-----
+xxx
+-----END RSA PRIVATE KEY-----
+```
+
+变更为：
+
+```
+-----BEGIN OPENSSH PRIVATE KEY-----
+xxx
+-----END OPENSSH PRIVATE KEY-----
+```
+
+Haibaracp 使用 Jsch 作为 SFTP 的实现，而 Jsch 不支持新的格式，因此你需要一些小改动：
+
+1. 如果密钥由你生成，仅需在 `ssh-keygen` 命令后加上 `-m PEM` 以生成旧版的密钥继续使用。
+2. 如果你无法自己获取旧版密钥，此时必须更改 POM，将 Jcraft 的 Jsch 更改为其他人 fork 的 Jsch 库（Jcraft 自 2018 年推送的 0.1.55 版本后没有任何的消息），比如：
+
+```xml
+<dependency>
+    <groupId>io.github.hligaty</groupId>
+    <artifactId>haibaracp-spring-boot-starter</artifactId>
+    <version>1.2.3</version>
+    <exclusions>
+        <exclusion>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+
+<dependency>
+    <groupId>com.github.mwiede</groupId>
+    <artifactId>jsch</artifactId>
+    <version>0.1.72</version>
+</dependency>
+```
+
+否则你将看到 [JSchException: invalid privatekey](https://github.com/mwiede/jsch/issues/12#issuecomment-662863338)。
 
 ## Thanks for free JetBrains Open Source license
 
