@@ -145,7 +145,10 @@ public class XXXService {
 
 ## API
 
-All methods may throw `SftpException`, which usually means there is a problem with the connection, or the file you uploaded or downloaded does not exist.
+- All methods may throw `SftpException`, which usually means there is a problem with the connection, or the file you uploaded or downloaded does not exist.
+- SFTP operations can change the working directory, so the framework resets the working directory to the original directory before the connection is returned to the pool. Note that this only resets the remote working path, not the local working path (usually you don't care about the local working path).
+
+The following instructions are all explained using the configuration in the `Configuration` section, so the work directory is `/root`.
 
 ### upload
 
@@ -226,7 +229,7 @@ sftpTemplate.executeWithoutResult(channelSftp -> System.out.println(channelSftp.
 
 ###  Multiple hosts
 
-To use SftpTemplate in the connection pool of multiple connections from different hosts, you need to specify the connection to be used for HaibaraCP, otherwise a `NullPointerException` will be thrown. The following describes how to specify the connection (examples use the configuration in the `Configuration-Multiple Host` chapter to explain ):
+To use SftpTemplate in the connection pool of multiple connections from different hosts, you need to specify the connection to be used for HaibaraCP, otherwise a `NullPointerException` will be thrown. The following describes how to specify the connection:
 
 - `HostHolder.changeHost(string)`: Specify the connection to be used next  time through hostName (that is, the key in the map under the specified  configuration file sftp.hosts. The following hostName will not be  explained repeatedly). Note that it can only specify the next  connection! ! !
 

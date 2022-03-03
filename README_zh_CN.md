@@ -146,7 +146,10 @@ public class XXXService {
 
 ## API
 
-所有方法都可能抛出 `SftpException`，这通常代表连接出问题了，也可能是你上传或下载的文件不存在。
+- 所有方法都可能抛出 `SftpException`，这通常代表连接出问题了，也可能是你上传或下载的文件不存在。
+- sftp 操作可能会改变工作目录，因此在连接返回给池前，框架会重置工作目录为原始目录。注意这只会重置远端工作路径，不会重置本地工作路径（通常你并不关心本地工作路径）。
+
+下面的介绍全部使用 `配置` 章节中的配置进行说明，因此初始工作目录是 `/root`。
 
 ### upload
 
@@ -223,7 +226,7 @@ sftpTemplate.executeWithoutResult(channelSftp -> System.out.println(channelSftp.
 
 ###  多 Host
 
-在多 Host 使用  SftpTemplate 需要为 HaibaraCP 指定将要使用的连接，否则将抛出 `NullPointerException`，下面介绍了如何指定连接（例子使用 `配置-多Host` 章节中的配置进行说明）：
+在多 Host 使用  SftpTemplate 需要为 HaibaraCP 指定将要使用的连接，否则将抛出 `NullPointerException`，下面介绍了如何指定连接：
 
 - `HostHolder.changeHost(string)` ：通过 hostName （即指定配置文件 sftp.hosts 下 map 中的 key。后面的 hostName 不再重复说明） 指定下次使用的连接。注意它只能指定下一次的连接！！！
 
