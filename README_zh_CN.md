@@ -187,9 +187,9 @@ sftpTemplate.download("aptx4869.doc", "D:\\aptx4869.doc");
 // 测试 /home/haibara/aptx4869.docx 是否存在
 boolean result1 = sftpTemplate.exists("/home/haibara/aptx4869.pdf");
 // 测试 /root/haibara/aptx4869.docx 是否存在
-boolean result2 = sftpTemplate.exists("/root/haibara/aptx4869.docx");
+boolean result2 = sftpTemplate.exists("haibara/aptx4869.docx");
 // 测试 /root/aptx4869.docx 是否存在
-boolean result3 = sftpTemplate.exists("/root/aptx4869.doc");
+boolean result3 = sftpTemplate.exists("aptx4869.doc");
 ```
 
 ### list
