@@ -1,6 +1,7 @@
 package io.github.hligaty.haibaracp.core;
 
 import io.github.hligaty.haibaracp.config.ClientProperties;
+import org.springframework.util.Assert;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
  * @author hligaty
  */
 public class HostHolder {
-  private static final ThreadLocal<Tuple2> THREADLOCAL = new ThreadLocal<>();
+  private static final ThreadLocal<Record> THREADLOCAL = new ThreadLocal<>();
   private static Set<String> hostNames;
 
   public static LinkedHashMap<String, ClientProperties> initHostKeys(LinkedHashMap<String, ClientProperties> clientPropertiesMap) {
@@ -58,7 +59,8 @@ public class HostHolder {
    * @see ClientProperties#getHosts()
    */
   public static void changeHost(String hostName) {
-    THREADLOCAL.set(new Tuple2(hostName, true));
+    Assert.notNull(hostName, "hostName must not be null");
+    THREADLOCAL.set(new Record(hostName, true));
   }
 
   /**
@@ -69,7 +71,8 @@ public class HostHolder {
    * @see ClientProperties#getHosts()
    */
   public static void changeHost(String hostName, boolean autoClose) {
-    THREADLOCAL.set(new Tuple2(hostName, autoClose));
+    Assert.notNull(hostName, "hostName must not be null");
+    THREADLOCAL.set(new Record(hostName, autoClose));
   }
 
   /**
@@ -80,25 +83,25 @@ public class HostHolder {
   }
 
   protected static String getHostName() {
-    Tuple2 tuple2 = THREADLOCAL.get();
-    if (tuple2 == null) {
+    Record record = THREADLOCAL.get();
+    if (record == null) {
       throw new NullPointerException("Host key not set");
     }
-    return tuple2.hostName;
+    return record.hostName;
   }
 
   protected static void clear() {
-    Tuple2 tuple2;
-    if ((tuple2 = THREADLOCAL.get()) != null && tuple2.autoClose) {
+    Record record;
+    if ((record = THREADLOCAL.get()) != null && record.autoClose) {
       THREADLOCAL.remove();
     }
   }
 
-  static class Tuple2 {
+  static class Record {
     public String hostName;
     public boolean autoClose;
 
-    public Tuple2(String hostName, boolean autoClose) {
+    Record(String hostName, boolean autoClose) {
       this.hostName = hostName;
       this.autoClose = autoClose;
     }
