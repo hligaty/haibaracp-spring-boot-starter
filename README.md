@@ -309,6 +309,10 @@ Haibaracp uses jsch as the implementation of SFTP, and jsch does not support the
 
 Otherwise you will see [JSchException: invalid privatekey](https://github.com/mwiede/jsch/issues/12#issuecomment-662863338).
 
+## Future
+
+A future version may separate the implementation of HaibaraCP and SFTP completely (like Spring Data Redis for Jedis and Lettuce, maybe more like Spring Integration FTP), The real implementation is provided only if you need to manipulate the underlying connection. If implemented, you might create shorthaircp as an abstraction, SherryCP as an FTP implementation, HaibaraCP as an SFTP implementation, At this point, the version may be 2.x.x.
+
 ## Thanks for free JetBrains Open Source license
 
 <a href="https://www.jetbrains.com/?from=Mybatis-PageHelper" target="_blank">
