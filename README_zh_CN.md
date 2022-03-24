@@ -8,6 +8,7 @@
 <a href="https://api.github.com/repos/hligaty/haibaracp-spring-boot-starter/releases/latest"><img src="https://img.shields.io/github/v/release/hligaty/haibaracp-spring-boot-starter"></a>
 <a href="https://github.com/hligaty/haibaracp-spring-boot-starter/stargazers"><img src="https://img.shields.io/github/stars/hligaty/haibaracp-spring-boot-starter"></a>
 <a href="https://github.com/hligaty/haibaracp-spring-boot-starter/network/members"><img src="https://img.shields.io/github/forks/hligaty/haibaracp-spring-boot-starter"></a>
+<a href="https://github.com/hligaty/haibaracp-spring-boot-starter/issues?q=is%3Aissue+is%3Aclosed"><img src="https://img.shields.io/github/issues-closed-raw/hligaty/haibaracp-spring-boot-starter"></a>
 </p>
 
 > **Github：[hligaty/haibaracp-spring-boot-starter: SFTP Connect Pool (github.com)](https://github.com/hligaty/haibaracp-spring-boot-starter)**
@@ -308,7 +309,7 @@ Haibaracp 使用 Jsch 作为 SFTP 的实现，而 Jsch 不支持新的格式，�
 
 ## 未来
 
-未来的某个版本也许会把 HaibaraCP 和 SFTP 的实现完全分开（像 Spring Data Redis 提供的 Jedis 和 Lettuce，或许更像 Spring integration ftp），除非你需要操作底层的连接才会提供真正的实现。如果实现的话，可能会创建 shorthaircp 作为抽象，创建 SherryCP 作为 ftp 实现，原 HaibaraCP 作为 sftp 实现（吐槽下，这和 Spring integration ftp 简直一模一样了），此时的版本可能是 2.x.x。
+未来的某个版本也许会把 HaibaraCP 和 SFTP 的实现完全分开（像 Spring Data Redis 提供的 Jedis 和 Lettuce，或许更像 Spring integration ftp），除非你需要操作底层的连接才会提供真正的实现。如果实现的话，可能会创建 ShortHairCP 作为抽象，创建 SherryCP 作为 ftp 实现，原 HaibaraCP 作为 sftp 实现（吐槽下，这和 Spring integration file 简直一模一样了），此时的版本可能是 2.x.x。
 
 ## Thanks for free JetBrains Open Source license
 
