@@ -33,9 +33,7 @@ public class HostHolder {
    * @see ClientProperties#getHosts()
    */
   public static Set<String> hostNames() {
-    if (hostNames == null) {
-      throw new NullPointerException("Not multiple hosts");
-    }
+    Assert.notNull(hostNames, "Not multiple hosts");
     return hostNames;
   }
 
@@ -46,9 +44,7 @@ public class HostHolder {
    * @return host names.
    */
   public static Set<String> hostNames(Predicate<String> predicate) {
-    if (hostNames == null) {
-      throw new NullPointerException("Not multiple hosts");
-    }
+    Assert.notNull(hostNames, "Not multiple hosts");
     return hostNames.stream().filter(predicate).collect(Collectors.toSet());
   }
 
@@ -83,10 +79,8 @@ public class HostHolder {
   }
 
   protected static String getHostName() {
-    Record record = THREADLOCAL.get();
-    if (record == null) {
-      throw new NullPointerException("Host key not set");
-    }
+    Record record;
+    Assert.notNull(record = THREADLOCAL.get() , "Host key not set");
     return record.hostName;
   }
 
@@ -98,8 +92,8 @@ public class HostHolder {
   }
 
   static class Record {
-    public String hostName;
-    public boolean autoClose;
+    String hostName;
+    boolean autoClose;
 
     Record(String hostName, boolean autoClose) {
       this.hostName = hostName;

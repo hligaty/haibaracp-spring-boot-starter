@@ -42,8 +42,7 @@ public class ChannelSftpWrapper {
       for (String dir : dirs) {
         if ("".equals(dir)) {
           continue;
-        }
-        if (!isDir(dir)) {
+        } else if (!isDir(dir)) {
           mkdir(dir);
         }
         cd(dir);

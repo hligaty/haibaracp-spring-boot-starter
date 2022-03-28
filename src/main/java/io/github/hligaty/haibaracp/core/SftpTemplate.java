@@ -18,20 +18,6 @@ public class SftpTemplate {
    * Executes the given action object within a connection, which can be exposed or not.
    *
    * @param action callback object that specifies the Sftp action.
-   * @throws SftpException an IO exception during remote interaction.
-   */
-  public void executeWithoutResult(SftpCallbackWithoutResult action) throws SftpException {
-    Assert.notNull(action, "Callback object must not be null");
-    this.execute(channelSftp -> {
-      action.doInSftp(channelSftp);
-      return null;
-    });
-  }
-
-  /**
-   * Executes the given action object within a connection, which can be exposed or not.
-   *
-   * @param action callback object that specifies the Sftp action.
    * @param <T>    return type
    * @return object returned by the action.
    * @throws SftpException an sftp exception during remote interaction.
@@ -53,6 +39,20 @@ public class SftpTemplate {
         }
       }
     }
+  }
+
+  /**
+   * Executes the given action object within a connection, which can be exposed or not.
+   *
+   * @param action callback object that specifies the Sftp action.
+   * @throws SftpException an IO exception during remote interaction.
+   */
+  public void executeWithoutResult(SftpCallbackWithoutResult action) throws SftpException {
+    Assert.notNull(action, "Callback object must not be null");
+    this.execute(channelSftp -> {
+      action.doInSftp(channelSftp);
+      return null;
+    });
   }
 
   /**
