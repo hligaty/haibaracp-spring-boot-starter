@@ -312,7 +312,8 @@ Otherwise you will see [JSchException: invalid privatekey](https://github.com/mw
 
 ## Future
 
-A future version may separate the implementation of HaibaraCP and SFTP completely (like Spring Data Redis for Jedis and Lettuce, maybe more like Spring Integration FTP), The real implementation is provided only if you need to manipulate the underlying connection. If implemented, you might create shorthaircp as an abstraction, SherryCP as an FTP implementation, HaibaraCP as an SFTP implementation, At this point, the version may be 2.x.x.
+- A future version may separate the implementation of HaibaraCP and SFTP completely (like Spring Data Redis for Jedis and Lettuce, maybe more like Spring Integration FTP), The real implementation is provided only if you need to manipulate the underlying connection. If implemented, you might create shorthaircp as an abstraction, SherryCP as an FTP implementation, HaibaraCP as an SFTP implementation, At this point, the version may be 2.x.x.
+- Support transactions.
 
 ## Thanks for free JetBrains Open Source license
 
