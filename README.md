@@ -220,6 +220,8 @@ LsEntry[] list5 = sftpTemplate.list("haibara");
 String dir = sftpTemplate.execute(ChannelSftp::pwd);
 ```
 
+Jsch's channelsftp provides many basic methods, which are a little inconvenient for execute. You can use channelsftpwrapper class to use channelsftp more conveniently. All methods of sftptemplate are also implemented through it.
+
 ### executeWithoutResult
 
 `executeWithoutResult(SftpCallbackWithoutResult action)` is used to perform custom SFTP operations with no return value, such as viewing the default SFTP directory (for other uses of ChannelSftp, please refer to jsch&#39;s API):
