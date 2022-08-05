@@ -217,6 +217,8 @@ LsEntry[] list5 = sftpTemplate.list("haibara");
 String dir = sftpTemplate.execute(ChannelSftp::pwd);
 ```
 
+Jsch 的 ChannelSftp 提供了很多基础的方法，对于 execute 来说有点不太便捷，你可以使用 ChannelSftpWrapper 类来更便捷的使用 ChannelSftp，SftpTemplate 所有的方法也都是通过它来实现的。
+
 ### executeWithoutResult
 
 `executeWithoutResult(SftpCallbackWithoutResult action)`用于执行自定义没有返回值的SFTP操作，比如查看默认的SFTP目录（ChannelSftp的其他用途，请参考 jsch 的 API）：
