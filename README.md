@@ -125,7 +125,7 @@ sftp:
     min-evictable-idle-time-millis: 1800000
 ```
 
-## Use
+## Usage
 
 HaibaraCP provides the `SftpTemplate ` class, which is used in the same way as the RedisTemplate provided by spring-boot-starter-data-redis, and it can be used by injecting it in any way:
 
