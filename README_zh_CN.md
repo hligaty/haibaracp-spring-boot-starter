@@ -126,7 +126,7 @@ sftp:
     min-evictable-idle-time-millis: 1800000
 ```
 
-## 使用
+## 用法
 
 HaibaraCP 提供 SftpTemplate 类，它与 `spring-boot-starter-data-redis`  提供的 RedisTemplate 使用方法相同，任意方式注入即可使用：
 
