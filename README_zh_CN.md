@@ -311,8 +311,7 @@ Haibaracp 使用 Jsch 作为 SFTP 的实现，而 Jsch 不支持新的格式，�
 
 ## 未来
 
-- 未来的某个版本也许会把 HaibaraCP 和 SFTP 的实现完全分开（像 Spring Data Redis 提供的 Jedis 和 Lettuce，或许更像 Spring integration file），除非你需要操作底层的连接才会提供真正的实现。如果实现的话，可能会创建 ShortHairCP 作为抽象，创建 SherryCP 作为 ftp 实现，原 HaibaraCP 作为 sftp 实现（吐槽下，这和 Spring integration file 简直一模一样了），此时的版本可能是 2.x.x。
-- 支持事务。
+- 支持事务 Spring Boot 3。
 
 ## Thanks for free JetBrains Open Source license
 
