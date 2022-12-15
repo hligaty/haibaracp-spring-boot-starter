@@ -23,13 +23,18 @@ HaibaraCP 是一个 SFTP 的 SpringBoot Starter，支持密码和密钥登录以
 
 ## Maven 依赖
 
-支持 springboot2 和 commons-pool2-2.6.0 及以上版本。
+| spring boot version | haibaracp |
+| :-----------------: | :-------: |
+|        2.x.x        |   1.2.3   |
+|        3.x.x        |   2.0.0   |
+
+依赖 Apache commons-pool2：
 
 ```xml
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.2.3</version>
+    <version>x.x.x</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -308,10 +313,6 @@ Haibaracp 使用 Jsch 作为 SFTP 的实现，而 Jsch 不支持新的格式，�
 ```
 
 否则你将看到 [JSchException: invalid privatekey](https://github.com/mwiede/jsch/issues/12#issuecomment-662863338)。
-
-## 未来
-
-- 支持事务 Spring Boot 3。
 
 ## Thanks for free JetBrains Open Source license
 

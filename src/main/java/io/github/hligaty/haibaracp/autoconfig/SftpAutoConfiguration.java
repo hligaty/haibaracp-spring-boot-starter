@@ -7,14 +7,14 @@ import io.github.hligaty.haibaracp.core.HostHolder;
 import io.github.hligaty.haibaracp.core.JschLogger;
 import io.github.hligaty.haibaracp.core.SftpPool;
 import io.github.hligaty.haibaracp.core.SftpTemplate;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author hligaty
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @EnableConfigurationProperties({ClientProperties.class, PoolProperties.class})
 public class SftpAutoConfiguration {
 
