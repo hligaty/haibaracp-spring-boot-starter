@@ -8,8 +8,9 @@ import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.*;
+import org.springframework.beans.factory.DisposableBean;
 
-import javax.annotation.PreDestroy;
+import java.time.Duration;
 import java.util.Map;
 
 /**
@@ -17,7 +18,7 @@ import java.util.Map;
  *
  * @author hligaty
  */
-public class SftpPool {
+public class SftpPool implements DisposableBean {
   private static final Log log = LogFactory.getLog(SftpPool.class);
   private GenericObjectPool<SftpClient> internalPool;
   private GenericKeyedObjectPool<String, SftpClient> internalKeyedPool;
@@ -64,8 +65,12 @@ public class SftpPool {
     }
   }
 
-  @PreDestroy
-  public void close() {
+  public boolean isUniqueHost() {
+    return internalPool != null;
+  }
+
+  @Override
+  public void destroy() {
     try {
       if (isUniqueHost()) {
         internalPool.close();
@@ -76,10 +81,6 @@ public class SftpPool {
     } catch (Exception e) {
       throw new PoolException("Could not destroy the pool", e);
     }
-  }
-
-  public boolean isUniqueHost() {
-    return internalPool != null;
   }
 
   private static class PooledClientFactory extends BasePooledObjectFactory<SftpClient> {
@@ -159,12 +160,12 @@ public class SftpPool {
   }
 
   private <T extends BaseObjectPoolConfig<SftpClient>> T commonPoolConfig(T config, PoolProperties poolProperties) {
-    config.setMaxWaitMillis(poolProperties.getMaxWait());
+    config.setMaxWait(Duration.ofMillis(poolProperties.getMaxWait()));
     config.setTestOnBorrow(poolProperties.isTestOnBorrow());
     config.setTestOnReturn(poolProperties.isTestOnReturn());
     config.setTestWhileIdle(poolProperties.isTestWhileIdle());
-    config.setTimeBetweenEvictionRunsMillis(poolProperties.getTimeBetweenEvictionRuns());
-    config.setMinEvictableIdleTimeMillis(poolProperties.getMinEvictableIdleTimeMillis());
+    config.setTimeBetweenEvictionRuns(Duration.ofMillis(poolProperties.getTimeBetweenEvictionRuns()));
+    config.setMinEvictableIdleTime(Duration.ofMillis(poolProperties.getMinEvictableIdleTimeMillis()));
     return config;
   }
 }
