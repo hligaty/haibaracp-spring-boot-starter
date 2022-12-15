@@ -23,13 +23,18 @@ HaibaraCP is a SpringBoot Starter for SFTP, which supports password and key  log
 
 ## Maven repository
 
-Spring boot 2 and Commons-Pool 2.6.0 and above are supported.
+| spring boot version | haibaracp |
+| :-----------------: | :-------: |
+|        2.x.x        |   1.2.3   |
+|        3.x.x        |   2.0.0   |
+
+Dependence Apache commons-pool2:
 
 ```xml
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.2.3</version>
+    <version>x.x.x</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -311,10 +316,6 @@ Haibaracp uses jsch as the implementation of SFTP, and jsch does not support the
 ```
 
 Otherwise you will see [JSchException: invalid privatekey](https://github.com/mwiede/jsch/issues/12#issuecomment-662863338).
-
-## Future
-
-- Support Spring Boot 3.
 
 ## Thanks for free JetBrains Open Source license
 

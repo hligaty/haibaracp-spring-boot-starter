@@ -20,7 +20,7 @@ public class SftpTemplate {
    * @param action callback object that specifies the Sftp action.
    * @param <T>    return type
    * @return object returned by the action.
-   * @throws SftpException an sftp exception during remote interaction.
+   * @throws SftpException a sftp exception during remote interaction.
    */
   public <T> T execute(SftpCallback<T> action) throws SftpException {
     Assert.notNull(action, "Callback object must not be null");
