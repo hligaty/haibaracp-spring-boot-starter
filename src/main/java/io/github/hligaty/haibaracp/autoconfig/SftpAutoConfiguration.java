@@ -23,7 +23,7 @@ public class SftpAutoConfiguration {
     JSch.setLogger(new JschLogger(clientProperties.isEnabledLog()));
     return clientProperties.getHosts() == null ?
             new SftpPool(clientProperties, poolProperties) :
-            new SftpPool(HostHolder.initHostKeys(clientProperties.getHosts()), poolProperties);
+            new SftpPool(HostHolder.initHostNames(clientProperties.getHosts()), poolProperties);
   }
 
   @Bean

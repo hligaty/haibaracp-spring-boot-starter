@@ -18,7 +18,7 @@ public class HostHolder {
   private static final ThreadLocal<Record> THREADLOCAL = new ThreadLocal<>();
   private static Set<String> hostNames;
 
-  public static LinkedHashMap<String, ClientProperties> initHostKeys(LinkedHashMap<String, ClientProperties> clientPropertiesMap) {
+  public static LinkedHashMap<String, ClientProperties> initHostNames(LinkedHashMap<String, ClientProperties> clientPropertiesMap) {
     if (hostNames != null) {
       throw new UnsupportedOperationException("HostHolder hostNames unsupported modify");
     }
@@ -51,7 +51,7 @@ public class HostHolder {
   /**
    * Switch the host connect currently bound to the thread. Only switch once.
    *
-   * @param hostName host key.
+   * @param hostName host name.
    * @see ClientProperties#getHosts()
    */
   public static void changeHost(String hostName) {
@@ -62,7 +62,7 @@ public class HostHolder {
   /**
    * Switch the host connect currently bound to the thread.
    *
-   * @param hostName host key.
+   * @param hostName host name.
    * @param autoClose If true, the thread bound value is automatically cleared.
    * @see ClientProperties#getHosts()
    */
@@ -80,7 +80,7 @@ public class HostHolder {
 
   protected static String getHostName() {
     Record record;
-    Assert.notNull(record = THREADLOCAL.get() , "Host key not set");
+    Assert.notNull(record = THREADLOCAL.get() , "Host name not set");
     return record.hostName;
   }
 
