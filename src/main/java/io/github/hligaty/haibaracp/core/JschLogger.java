@@ -18,42 +18,26 @@ public class JschLogger implements Logger {
     if (!enabled) {
       return false;
     }
-    switch (level) {
-      case Logger.INFO:
-        return log.isInfoEnabled();
-      case Logger.WARN:
-        return log.isWarnEnabled();
-      case Logger.DEBUG:
-        return log.isDebugEnabled();
-      case Logger.ERROR:
-        return log.isErrorEnabled();
-      case Logger.FATAL:
-        return log.isFatalEnabled();
-      default:
-        return false;
-    }
+    return switch (level) {
+      case Logger.INFO -> log.isInfoEnabled();
+      case Logger.WARN -> log.isWarnEnabled();
+      case Logger.DEBUG -> log.isDebugEnabled();
+      case Logger.ERROR -> log.isErrorEnabled();
+      case Logger.FATAL -> log.isFatalEnabled();
+      default -> false;
+    };
   }
 
   @Override
   public void log(int level, String message) {
     switch (level) {
-      case Logger.INFO:
-        log.info(message);
-        break;
-      case Logger.WARN:
-        log.warn(message);
-        break;
-      case Logger.DEBUG:
-        log.debug(message);
-        break;
-      case Logger.ERROR:
-        log.error(message);
-        break;
-      case Logger.FATAL:
-        log.fatal(message);
-        break;
-      default:
-        break;
+      case Logger.INFO -> log.info(message);
+      case Logger.WARN -> log.warn(message);
+      case Logger.DEBUG -> log.debug(message);
+      case Logger.ERROR -> log.error(message);
+      case Logger.FATAL -> log.fatal(message);
+      default -> {
+      }
     }
   }
 

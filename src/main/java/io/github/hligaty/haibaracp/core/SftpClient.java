@@ -90,13 +90,8 @@ public class SftpClient {
     return channelSftp;
   }
 
-  private static class UserInfoImpl implements UserInfo {
-    private final String passphrase;
-
-    public UserInfoImpl(String passphrase) {
-      this.passphrase = passphrase;
-    }
-
+  private record UserInfoImpl(String passphrase) implements UserInfo {
+    
     @Override
     public String getPassphrase() {
       return passphrase;

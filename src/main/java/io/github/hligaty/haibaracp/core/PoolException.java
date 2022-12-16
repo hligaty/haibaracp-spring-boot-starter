@@ -8,7 +8,6 @@ import org.springframework.lang.Nullable;
  *
  * @author hligaty
  */
-@SuppressWarnings("serial")
 public class PoolException extends NestedRuntimeException {
 
   public PoolException(@Nullable String msg, @Nullable Throwable cause) {
