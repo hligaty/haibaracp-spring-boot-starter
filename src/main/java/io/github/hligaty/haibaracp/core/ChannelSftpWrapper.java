@@ -6,6 +6,7 @@ import org.springframework.util.Assert;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.Vector;
 
 /**
@@ -29,6 +30,10 @@ public class ChannelSftpWrapper {
    */
   public final void cdAndMkdir(String path) throws SftpException {
     Assert.hasLength(path, "path must not be null");
+    path = Paths.get(path).normalize().toString();
+    if (path.isEmpty()) {
+      return;
+    }
     try {
       cd(path);
     } catch (SftpException e) {
@@ -40,9 +45,7 @@ public class ChannelSftpWrapper {
       }
       String[] dirs = path.split(SEPARATOR);
       for (String dir : dirs) {
-        if ("".equals(dir)) {
-          continue;
-        } else if (!isDir(dir)) {
+        if (!isDir(dir)) {
           mkdir(dir);
         }
         cd(dir);
