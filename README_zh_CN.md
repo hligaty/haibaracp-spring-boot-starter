@@ -226,10 +226,12 @@ Jsch 的 ChannelSftp 提供了很多基础的方法，对于 execute 来说有�
 
 ### executeWithoutResult
 
-`executeWithoutResult(SftpCallbackWithoutResult action)`用于执行自定义没有返回值的SFTP操作，比如查看默认的SFTP目录（ChannelSftp的其他用途，请参考 jsch 的 API）：
+`executeWithoutResult(SftpCallbackWithoutResult action)`用于执行自定义没有返回值的SFTP操作，比如下载文件（ChannelSftp的其他用途，请参考 jsch 的 API）：
 
 ```java
-sftpTemplate.executeWithoutResult(channelSftp -> System.out.println(channelSftp.getHome()));
+try (OutputStream outputStream = Files.newOutputStream(Paths.get("/root/aptx4869.doc"))) {
+  sftpTemplate.executeWithoutResult(channelSftp -> channelSftp.get("aptx4869.doc", outputStream));
+}
 ```
 
 ###  多 Host

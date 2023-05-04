@@ -229,10 +229,12 @@ Jsch's channelsftp provides many basic methods, which are a little inconvenient 
 
 ### executeWithoutResult
 
-`executeWithoutResult(SftpCallbackWithoutResult action)` is used to perform custom SFTP operations with no return value, such as viewing the default SFTP directory (for other uses of ChannelSftp, please refer to jsch&#39;s API):
+`executeWithoutResult(SftpCallbackWithoutResult action)` is used to perform custom SFTP operations with no return value, such as download file (for other uses of ChannelSftp, please refer to jsch&#39;s API):
 
 ```java
-sftpTemplate.executeWithoutResult(channelSftp -> System.out.println(channelSftp.getHome()));
+try (OutputStream outputStream = Files.newOutputStream(Paths.get("/root/aptx4869.doc"))) {
+  sftpTemplate.executeWithoutResult(channelSftp -> channelSftp.get("aptx4869.doc", outputStream));
+}
 ```
 
 ###  Multiple hosts
