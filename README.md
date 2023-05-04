@@ -319,6 +319,10 @@ Haibaracp uses jsch as the implementation of SFTP, and jsch does not support the
 
 Otherwise you will see [JSchException: invalid privatekey](https://github.com/mwiede/jsch/issues/12#issuecomment-662863338).
 
+## Roadmap
+
+- [ ] Provide a SessionFactory Bean for custom connection creation
+
 ## Thanks for free JetBrains Open Source license
 
 <a href="https://www.jetbrains.com/?from=Mybatis-PageHelper" target="_blank">

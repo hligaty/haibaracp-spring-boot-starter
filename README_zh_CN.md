@@ -316,6 +316,10 @@ Haibaracp 使用 Jsch 作为 SFTP 的实现，而 Jsch 不支持新的格式，�
 
 否则你将看到 [JSchException: invalid privatekey](https://github.com/mwiede/jsch/issues/12#issuecomment-662863338)。
 
+## 路线图
+
+- [ ] 提供一个 SessionFactory Bean 用于自定义创建连接
+
 ## Thanks for free JetBrains Open Source license
 
 <a href="https://www.jetbrains.com/?from=Mybatis-PageHelper" target="_blank">
