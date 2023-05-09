@@ -319,6 +319,7 @@ Haibaracp 使用 Jsch 作为 SFTP 的实现，而 Jsch 不支持新的格式，�
 ## 路线图
 
 - [ ] 提供一个 SessionFactory Bean 用于自定义创建连接
+- [ ] 移除对多个主机的原生支持
 
 ## Thanks for free JetBrains Open Source license
 
