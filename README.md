@@ -322,6 +322,7 @@ Otherwise you will see [JSchException: invalid privatekey](https://github.com/mw
 ## Roadmap
 
 - [ ] Provide a SessionFactory Bean for custom connection creation
+- [ ] Remove native support for multiple hosts
 
 ## Thanks for free JetBrains Open Source license
 
