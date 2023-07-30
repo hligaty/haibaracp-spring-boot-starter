@@ -24,18 +24,16 @@ public class SftpTemplate {
    */
   public <T> T execute(SftpCallback<T> action) throws SftpException {
     Assert.notNull(action, "Callback object must not be null");
-    String hostName = sftpPool.isUniqueHost() ? null : HostHolder.getHostName();
     SftpClient sftpClient = null;
     try {
-      sftpClient = sftpPool.borrowObject(hostName);
+      sftpClient = sftpPool.borrowObject();
       return action.doInSftp(sftpClient.getChannelSftp());
     } finally {
-      HostHolder.clear();
       if (sftpClient != null) {
         if (sftpClient.reset()) {
-          sftpPool.returnObject(hostName, sftpClient);
+          sftpPool.returnObject(sftpClient);
         } else {
-          sftpPool.invalidateObject(hostName, sftpClient);
+          sftpPool.invalidateObject(sftpClient);
         }
       }
     }

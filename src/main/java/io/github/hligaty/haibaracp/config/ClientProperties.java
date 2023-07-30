@@ -12,143 +12,143 @@ import java.util.StringJoiner;
  */
 @ConfigurationProperties("sftp")
 public class ClientProperties {
-  /**
-   * SFTP server host.
-   */
-  private String host = "localhost";
-  /**
-   * SFTP server port.
-   */
-  private int port = 22;
-  /**
-   * Login username of the sftp server.
-   */
-  private String username;
-  /**
-   * Whether to enable host key login.
-   */
-  private boolean strictHostKeyChecking = false;
-  /**
-   * host key.
-   */
-  private String keyPath;
-  /**
-   * Login password or host key passphrase of the sftp server.
-   */
-  private String password = "";
-  /**
-   * Specifies the timeout period for new session creation, in milliseconds.
-   */
-  private int connectTimeout = 0;
-  /**
-   * SSH kex algorithms.
-   */
-  private String kex;
-  /**
-   * Enable jsch log, Cannot be individually turned on or off for one of multiple hosts.
-   */
-  private boolean enabledLog = false;
-  /**
-   * Configure multiple hosts.
-   */
-  private LinkedHashMap<String, ClientProperties> hosts;
+    /**
+     * SFTP server host.
+     */
+    private String host = "localhost";
+    /**
+     * SFTP server port.
+     */
+    private int port = 22;
+    /**
+     * Login username of the sftp server.
+     */
+    private String username;
+    /**
+     * Whether to enable host key login.
+     */
+    private boolean strictHostKeyChecking = false;
+    /**
+     * host key.
+     */
+    private String keyPath;
+    /**
+     * Login password or host key passphrase of the sftp server.
+     */
+    private String password = "";
+    /**
+     * Specifies the timeout period for new session creation, in milliseconds.
+     */
+    private int connectTimeout = 0;
+    /**
+     * SSH kex algorithms.
+     */
+    private String kex;
+    /**
+     * Enable jsch log, Cannot be individually turned on or off for one of multiple hosts.
+     */
+    private boolean enabledLog = false;
+    /**
+     * Configure multiple hosts.
+     */
+    private LinkedHashMap<String, ClientProperties> hosts;
 
-  public String getHost() {
-    return host;
-  }
+    public String getHost() {
+        return host;
+    }
 
-  public void setHost(String host) {
-    this.host = host;
-  }
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-  public int getPort() {
-    return port;
-  }
+    public int getPort() {
+        return port;
+    }
 
-  public void setPort(int port) {
-    this.port = port;
-  }
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-  public String getUsername() {
-    return username;
-  }
+    public String getUsername() {
+        return username;
+    }
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-  public boolean isStrictHostKeyChecking() {
-    return strictHostKeyChecking;
-  }
+    public boolean isStrictHostKeyChecking() {
+        return strictHostKeyChecking;
+    }
 
-  public void setStrictHostKeyChecking(boolean strictHostKeyChecking) {
-    this.strictHostKeyChecking = strictHostKeyChecking;
-  }
+    public void setStrictHostKeyChecking(boolean strictHostKeyChecking) {
+        this.strictHostKeyChecking = strictHostKeyChecking;
+    }
 
-  public String getKeyPath() {
-    return keyPath;
-  }
+    public String getKeyPath() {
+        return keyPath;
+    }
 
-  public void setKeyPath(String keyPath) {
-    this.keyPath = keyPath;
-  }
+    public void setKeyPath(String keyPath) {
+        this.keyPath = keyPath;
+    }
 
-  public String getPassword() {
-    return password;
-  }
+    public String getPassword() {
+        return password;
+    }
 
-  public void setPassword(String password) {
-    this.password = password;
-  }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-  public String getKex() {
-    return kex;
-  }
+    public String getKex() {
+        return kex;
+    }
 
-  public void setKex(String kex) {
-    this.kex = kex;
-  }
+    public void setKex(String kex) {
+        this.kex = kex;
+    }
 
-  /**
-   * @return map key is used to switch the host connection, value is client properties.
-   */
-  public LinkedHashMap<String, ClientProperties> getHosts() {
-    return hosts;
-  }
+    /**
+     * @return map key is used to switch the host connection, value is client properties.
+     */
+    public LinkedHashMap<String, ClientProperties> getHosts() {
+        return hosts;
+    }
 
-  public void setHosts(LinkedHashMap<String, ClientProperties> hosts) {
-    this.hosts = hosts;
-  }
+    public void setHosts(LinkedHashMap<String, ClientProperties> hosts) {
+        this.hosts = hosts;
+    }
 
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", ClientProperties.class.getSimpleName() + "[", "]")
-            .add("host='" + host + "'")
-            .add("port=" + port)
-            .add("username='" + username + "'")
-            .add("strictHostKeyChecking=" + strictHostKeyChecking)
-            .add("keyPath='" + keyPath + "'")
-            .add("password='" + password + "'")
-            .add("connectTimeout=" + connectTimeout)
-            .add("kex='" + kex + "'")
-            .add("enabledLog=" + enabledLog)
-            .add("hosts=" + hosts)
-            .toString();
-  }
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", ClientProperties.class.getSimpleName() + "[", "]")
+                .add("host='" + host + "'")
+                .add("port=" + port)
+                .add("username='" + username + "'")
+                .add("strictHostKeyChecking=" + strictHostKeyChecking)
+                .add("keyPath='" + keyPath + "'")
+                .add("password='" + password + "'")
+                .add("connectTimeout=" + connectTimeout)
+                .add("kex='" + kex + "'")
+                .add("enabledLog=" + enabledLog)
+                .add("hosts=" + hosts)
+                .toString();
+    }
 
-  public boolean isEnabledLog() {
-    return enabledLog;
-  }
+    public boolean isEnabledLog() {
+        return enabledLog;
+    }
 
-  public void setEnabledLog(boolean enabledLog) {
-    this.enabledLog = enabledLog;
-  }
+    public void setEnabledLog(boolean enabledLog) {
+        this.enabledLog = enabledLog;
+    }
 
-  public int getConnectTimeout() {
-    return connectTimeout;
-  }
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
 
-  public void setConnectTimeout(int connectTimeout) {
-    this.connectTimeout = connectTimeout;
-  }
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
 }
