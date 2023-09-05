@@ -48,10 +48,6 @@ public class ClientProperties {
      * Enable jsch log, Cannot be individually turned on or off for one of multiple hosts.
      */
     private boolean enabledLog = false;
-    /**
-     * Configure multiple hosts.
-     */
-    private LinkedHashMap<String, ClientProperties> hosts;
 
     public String getHost() {
         return host;
@@ -109,17 +105,6 @@ public class ClientProperties {
         this.kex = kex;
     }
 
-    /**
-     * @return map key is used to switch the host connection, value is client properties.
-     */
-    public LinkedHashMap<String, ClientProperties> getHosts() {
-        return hosts;
-    }
-
-    public void setHosts(LinkedHashMap<String, ClientProperties> hosts) {
-        this.hosts = hosts;
-    }
-
     @Override
     public String toString() {
         return new StringJoiner(", ", ClientProperties.class.getSimpleName() + "[", "]")
@@ -132,7 +117,6 @@ public class ClientProperties {
                 .add("connectTimeout=" + connectTimeout)
                 .add("kex='" + kex + "'")
                 .add("enabledLog=" + enabledLog)
-                .add("hosts=" + hosts)
                 .toString();
     }
 

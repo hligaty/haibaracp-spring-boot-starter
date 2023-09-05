@@ -16,12 +16,15 @@ import java.time.Duration;
  *
  * @author hligaty
  */
-public class SftpPool implements DisposableBean {
-    private static final Log log = LogFactory.getLog(SftpPool.class);
+public class SftpClientPool implements DisposableBean {
+    private static final Log log = LogFactory.getLog(SftpClientPool.class);
     private final GenericObjectPool<SftpClient> internalPool;
+    private final SftpClientFactory sftpClientFactory;
 
-    public SftpPool(ClientProperties clientProperties, PoolProperties poolProperties) {
-        this.internalPool = new GenericObjectPool<>(new PooledClientFactory(clientProperties), getPoolConfig(poolProperties));
+    public SftpClientPool(SftpClientFactory sftpClientFactory,
+                          PoolProperties poolProperties) {
+        this.internalPool = new GenericObjectPool<>(new PooledClientFactory(), getPoolConfig(poolProperties));
+        this.sftpClientFactory = sftpClientFactory;
         log.info("HaibaraCP: Created");
     }
 
@@ -59,17 +62,11 @@ public class SftpPool implements DisposableBean {
         }
     }
 
-    private static class PooledClientFactory extends BasePooledObjectFactory<SftpClient> {
-
-        private final ClientProperties clientProperties;
-
-        public PooledClientFactory(ClientProperties clientProperties) {
-            this.clientProperties = clientProperties;
-        }
+    private class PooledClientFactory extends BasePooledObjectFactory<SftpClient> {
 
         @Override
         public SftpClient create() {
-            return new SftpClient(clientProperties);
+            return sftpClientFactory.getSftpClient();
         }
 
         @Override

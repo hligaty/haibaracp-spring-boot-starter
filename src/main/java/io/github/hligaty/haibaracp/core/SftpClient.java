@@ -1,7 +1,12 @@
 package io.github.hligaty.haibaracp.core;
 
 import com.jcraft.jsch.*;
+import io.github.hligaty.haibaracp.autoconfig.SftpAutoConfiguration;
 import io.github.hligaty.haibaracp.config.ClientProperties;
+import io.github.hligaty.haibaracp.config.PoolProperties;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.lang.NonNull;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -24,20 +29,8 @@ public class SftpClient {
 
     public SftpClient(ClientProperties clientProperties) {
         try {
-            JSch jsch = new JSch();
-            session = jsch.getSession(clientProperties.getUsername(), clientProperties.getHost(), clientProperties.getPort());
-            if (clientProperties.isStrictHostKeyChecking()) {
-                session.setConfig("StrictHostKeyChecking", "ask");
-                session.setUserInfo(new UserInfoImpl(clientProperties.getPassword()));
-                jsch.addIdentity(clientProperties.getKeyPath());
-            } else {
-                session.setConfig("StrictHostKeyChecking", "no");
-                session.setPassword(clientProperties.getPassword());
-            }
-            if (StringUtils.hasText(clientProperties.getKex())) {
-                session.setConfig("kex", clientProperties.getKex());
-            }
-            session.connect(clientProperties.getConnectTimeout());
+            this.session = createJschSession(clientProperties);
+            Assert.notNull(session, "session is required; it must not be null");
             channelSftp = (ChannelSftp) session.openChannel("sftp");
             channelSftp.connect();
             originalDir = channelSftp.pwd();
@@ -45,6 +38,34 @@ public class SftpClient {
             disconnect();
             throw new IllegalStateException("failed to create sftp Client", e);
         }
+    }
+
+    /**
+     * Create a Jsch Session.
+     * 
+     * @param clientProperties properties for SFTP
+     * @return {@link com.jcraft.jsch.Session}
+     * @throws Exception an exception during create session.
+     * @see SftpClientFactory
+     * @see SftpAutoConfiguration#sftpPool(ClientProperties, PoolProperties, ObjectProvider)
+     */
+    @NonNull
+    public Session createJschSession(ClientProperties clientProperties) throws Exception {
+        JSch jsch = new JSch();
+        Session session = jsch.getSession(clientProperties.getUsername(), clientProperties.getHost(), clientProperties.getPort());
+        if (clientProperties.isStrictHostKeyChecking()) {
+            session.setConfig("StrictHostKeyChecking", "ask");
+            session.setUserInfo(new UserInfoImpl(clientProperties.getPassword()));
+            jsch.addIdentity(clientProperties.getKeyPath());
+        } else {
+            session.setConfig("StrictHostKeyChecking", "no");
+            session.setPassword(clientProperties.getPassword());
+        }
+        if (StringUtils.hasText(clientProperties.getKex())) {
+            session.setConfig("kex", clientProperties.getKex());
+        }
+        session.connect(clientProperties.getConnectTimeout());
+        return session;
     }
 
     /**
