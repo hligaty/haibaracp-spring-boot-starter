@@ -10,7 +10,7 @@ import org.springframework.lang.Nullable;
  */
 public class PoolException extends NestedRuntimeException {
 
-  public PoolException(@Nullable String msg, @Nullable Throwable cause) {
-    super(msg, cause);
-  }
+    public PoolException(@Nullable String msg, @Nullable Throwable cause) {
+        super(msg, cause);
+    }
 }
