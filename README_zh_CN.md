@@ -71,7 +71,7 @@ sftp:
   kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
 ```
 
-### 多 Host
+### 多 Host（移除）
 
 比如两个 Host，一个密码登录，一个密钥登录：
 
@@ -234,7 +234,7 @@ try (OutputStream outputStream = Files.newOutputStream(Paths.get("/root/aptx4869
 }
 ```
 
-###  多 Host
+###  多 Host（移除）
 
 在多 Host 使用  SftpTemplate 需要为 HaibaraCP 指定将要使用的连接，否则将抛出 `NullPointerException`，下面介绍了如何指定连接：
 
