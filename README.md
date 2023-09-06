@@ -71,7 +71,7 @@ sftp:
   kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
 ```
 
-### Multiple hosts
+### Multiple hosts(removal)
 
 For example, two hosts, one password login and one key login:
 
