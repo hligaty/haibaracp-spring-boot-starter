@@ -237,7 +237,7 @@ try (OutputStream outputStream = Files.newOutputStream(Paths.get("/root/aptx4869
 }
 ```
 
-###  Multiple hosts
+###  Multiple hosts(removal)
 
 To use SftpTemplate in the connection pool of multiple connections from different hosts, you need to specify the connection to be used for HaibaraCP, otherwise a `NullPointerException` will be thrown. The following describes how to specify the connection:
 
