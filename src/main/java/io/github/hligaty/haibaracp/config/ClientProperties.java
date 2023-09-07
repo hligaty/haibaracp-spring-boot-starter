@@ -1,8 +1,9 @@
 package io.github.hligaty.haibaracp.config;
 
+import com.jcraft.jsch.JSch;
+import io.github.hligaty.haibaracp.core.JschLogger;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.LinkedHashMap;
 import java.util.StringJoiner;
 
 /**
@@ -126,6 +127,7 @@ public class ClientProperties {
 
     public void setEnabledLog(boolean enabledLog) {
         this.enabledLog = enabledLog;
+        JSch.setLogger(new JschLogger(enabledLog));
     }
 
     public int getConnectTimeout() {

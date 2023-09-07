@@ -1,73 +1,59 @@
 package io.github.hligaty.haibaracp.core;
 
-import io.github.hligaty.haibaracp.config.ClientProperties;
 import io.github.hligaty.haibaracp.config.PoolProperties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.*;
-import org.springframework.beans.factory.DisposableBean;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
-/**
- * SFTP connect pool.
- *
- * @author hligaty
- */
-public class SftpClientPool implements DisposableBean {
-    private static final Log log = LogFactory.getLog(SftpClientPool.class);
-    private final GenericObjectPool<SftpClient> internalPool;
-    private final SftpClientFactory sftpClientFactory;
+class SftpClientProvider {
 
-    public SftpClientPool(SftpClientFactory sftpClientFactory,
-                          PoolProperties poolProperties) {
-        this.internalPool = new GenericObjectPool<>(new PooledClientFactory(), getPoolConfig(poolProperties));
-        this.sftpClientFactory = sftpClientFactory;
+    private static final Log log = LogFactory.getLog(SftpClientProvider.class);
+
+    private final GenericObjectPool<SftpClient> pool;
+
+    public SftpClientProvider(Supplier<SftpClient> sftpClientSupplier, PoolProperties poolProperties) {
+        this.pool = new GenericObjectPool<>(new SftpPooledObjectFactory() {
+            @Override
+            public SftpClient create() {
+                return sftpClientSupplier.get();
+            }
+        }, getPoolConfig(poolProperties));
         log.info("HaibaraCP: Created");
     }
 
-    public SftpClient borrowObject() {
+    public SftpClient getSftpClient() {
         try {
-            return internalPool.borrowObject();
+            return pool.borrowObject();
         } catch (Exception e) {
             throw new PoolException("Could not get a resource from the pool", e);
         }
     }
-
-    public void invalidateObject(SftpClient sftpClient) {
+    
+    public void release(SftpClient sftpClient) {
         try {
-            internalPool.invalidateObject(sftpClient);
-        } catch (Exception e) {
-            throw new PoolException("Could not invalidate the broken resource", e);
-        }
-    }
-
-    public void returnObject(SftpClient sftpClient) {
-        try {
-            internalPool.returnObject(sftpClient);
+            pool.returnObject(sftpClient);
         } catch (Exception e) {
             throw new PoolException("Could not return a resource from the pool", e);
         }
     }
-
-    @Override
+    
     public void destroy() {
         try {
-            internalPool.close();
+            pool.close();
             log.info("HaibaraCP: Closed");
         } catch (Exception e) {
             throw new PoolException("Could not destroy the pool", e);
         }
     }
 
-    private class PooledClientFactory extends BasePooledObjectFactory<SftpClient> {
-
-        @Override
-        public SftpClient create() {
-            return sftpClientFactory.getSftpClient();
-        }
+    private static abstract class SftpPooledObjectFactory extends BasePooledObjectFactory<SftpClient> {
 
         @Override
         public PooledObject<SftpClient> wrap(SftpClient sftpClient) {

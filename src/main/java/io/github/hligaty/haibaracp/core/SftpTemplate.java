@@ -8,10 +8,11 @@ import org.springframework.util.Assert;
  * @author hligaty
  */
 public class SftpTemplate {
-    private final SftpClientPool sftpClientPool;
+    
+    private final SftpClientFactory sftpClientFactory;
 
-    public SftpTemplate(SftpClientPool sftpClientPool) {
-        this.sftpClientPool = sftpClientPool;
+    public SftpTemplate(SftpClientFactory sftpClientFactory) {
+        this.sftpClientFactory = sftpClientFactory;
     }
 
     /**
@@ -24,15 +25,11 @@ public class SftpTemplate {
      */
     public <T> T execute(SftpCallback<T> action) throws SftpException {
         Assert.notNull(action, "Callback object must not be null");
-        SftpClient sftpClient = sftpClientPool.borrowObject();
+        SftpClient sftpClient = sftpClientFactory.getSftpClient();
         try {
             return action.doInSftp(sftpClient.getChannelSftp());
         } finally {
-            if (sftpClient.reset()) {
-                sftpClientPool.returnObject(sftpClient);
-            } else {
-                sftpClientPool.invalidateObject(sftpClient);
-            }
+            sftpClient.release();
         }
     }
 
