@@ -1,7 +1,6 @@
 package io.github.hligaty.haibaracp.core;
 
 import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.SftpException;
 
 /**
  * Callback interface for Sftp code. To be used with {@link SftpTemplate}'s
@@ -20,7 +19,7 @@ public interface SftpCallback<T> {
      *
      * @param channelSftp active Sftp channel.
      * @return a result object or null if none.
-     * @throws SftpException an sftp exception during remote interaction.
+     * @throws SessionException a sftp exception during remote interaction.
      */
-    T doInSftp(ChannelSftp channelSftp) throws SftpException;
+    T doInSftp(ChannelSftp channelSftp) throws SessionException;
 }

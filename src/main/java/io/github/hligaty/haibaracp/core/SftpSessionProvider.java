@@ -12,23 +12,25 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import java.time.Duration;
 import java.util.function.Supplier;
 
-class SftpClientProvider {
+class SftpSessionProvider {
 
-    private static final Log log = LogFactory.getLog(SftpClientProvider.class);
+    private static final Log log = LogFactory.getLog(SftpSessionProvider.class);
 
-    private final GenericObjectPool<SftpClient> pool;
+    private final GenericObjectPool<SftpSession> pool;
 
-    public SftpClientProvider(Supplier<SftpClient> sftpClientSupplier, PoolProperties poolProperties) {
+    SftpSessionProvider(Supplier<SftpSession> sftpClientSupplier, PoolProperties poolProperties) {
         this.pool = new GenericObjectPool<>(new SftpPooledObjectFactory() {
             @Override
-            public SftpClient create() {
-                return sftpClientSupplier.get();
+            public SftpSession create() {
+                SftpSession sftpSession = sftpClientSupplier.get();
+                sftpSession.setSftpClientProvider(SftpSessionProvider.this);
+                return sftpSession;
             }
         }, getPoolConfig(poolProperties));
         log.info("HaibaraCP: Created");
     }
 
-    public SftpClient getSftpClient() {
+    public SftpSession getSftpClient() {
         try {
             return pool.borrowObject();
         } catch (Exception e) {
@@ -36,9 +38,9 @@ class SftpClientProvider {
         }
     }
     
-    public void release(SftpClient sftpClient) {
+    public void release(SftpSession sftpSession) {
         try {
-            pool.returnObject(sftpClient);
+            pool.returnObject(sftpSession);
         } catch (Exception e) {
             throw new PoolException("Could not return a resource from the pool", e);
         }
@@ -53,27 +55,27 @@ class SftpClientProvider {
         }
     }
 
-    private static abstract class SftpPooledObjectFactory extends BasePooledObjectFactory<SftpClient> {
-
+    private abstract static class SftpPooledObjectFactory extends BasePooledObjectFactory<SftpSession> {
+        
         @Override
-        public PooledObject<SftpClient> wrap(SftpClient sftpClient) {
-            return new DefaultPooledObject<>(sftpClient);
+        public PooledObject<SftpSession> wrap(SftpSession sftpSession) {
+            return new DefaultPooledObject<>(sftpSession);
         }
 
         @Override
-        public boolean validateObject(PooledObject<SftpClient> p) {
+        public boolean validateObject(PooledObject<SftpSession> p) {
             return p.getObject().test();
         }
 
         @Override
-        public void destroyObject(PooledObject<SftpClient> p) {
+        public void destroyObject(PooledObject<SftpSession> p) {
             p.getObject().disconnect();
         }
 
     }
 
-    private GenericObjectPoolConfig<SftpClient> getPoolConfig(PoolProperties poolProperties) {
-        GenericObjectPoolConfig<SftpClient> config = new GenericObjectPoolConfig<>();
+    private GenericObjectPoolConfig<SftpSession> getPoolConfig(PoolProperties poolProperties) {
+        GenericObjectPoolConfig<SftpSession> config = new GenericObjectPoolConfig<>();
         config.setMaxWait(Duration.ofMillis(poolProperties.getMaxWait()));
         config.setTestOnBorrow(poolProperties.isTestOnBorrow());
         config.setTestOnReturn(poolProperties.isTestOnReturn());

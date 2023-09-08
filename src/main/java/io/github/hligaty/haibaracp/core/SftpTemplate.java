@@ -1,7 +1,6 @@
 package io.github.hligaty.haibaracp.core;
 
 import com.jcraft.jsch.ChannelSftp.LsEntry;
-import com.jcraft.jsch.SftpException;
 import org.springframework.util.Assert;
 
 /**
@@ -9,10 +8,10 @@ import org.springframework.util.Assert;
  */
 public class SftpTemplate {
     
-    private final SftpClientFactory sftpClientFactory;
+    private final SftpSessionFactory sftpSessionFactory;
 
-    public SftpTemplate(SftpClientFactory sftpClientFactory) {
-        this.sftpClientFactory = sftpClientFactory;
+    public SftpTemplate(SftpSessionFactory sftpSessionFactory) {
+        this.sftpSessionFactory = sftpSessionFactory;
     }
 
     /**
@@ -21,28 +20,42 @@ public class SftpTemplate {
      * @param action callback object that specifies the Sftp action.
      * @param <T>    return type
      * @return object returned by the action.
-     * @throws SftpException a sftp exception during remote interaction.
+     * @throws SessionException a sftp exception during remote interaction.
      */
-    public <T> T execute(SftpCallback<T> action) throws SftpException {
-        Assert.notNull(action, "Callback object must not be null");
-        SftpClient sftpClient = sftpClientFactory.getSftpClient();
-        try {
-            return action.doInSftp(sftpClient.getChannelSftp());
-        } finally {
-            sftpClient.release();
-        }
+    public <T> T execute(SftpCallback<T> action) throws SessionException {
+        return executeSession(sftpSession -> action.doInSftp(sftpSession.channelSftp()));
     }
 
     /**
      * Executes the given action object within a connection, which can be exposed or not.
      *
      * @param action callback object that specifies the Sftp action.
-     * @throws SftpException an IO exception during remote interaction.
+     * @throws SessionException an IO exception during remote interaction.
      */
-    public void executeWithoutResult(SftpCallbackWithoutResult action) throws SftpException {
+    public void executeWithoutResult(SftpCallbackWithoutResult action) throws SessionException {
         Assert.notNull(action, "Callback object must not be null");
         this.execute(channelSftp -> {
             action.doInSftp(channelSftp);
+            return null;
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    public <S extends SftpSession, T> T executeSession(SessionCallback<S, T> action) throws SessionException {
+        Assert.notNull(action, "Callback object must not be null");
+        SftpSession sftpSession = sftpSessionFactory.getSftpSession();
+        try {
+            return action.doInSession((S) sftpSession);
+        } finally {
+            sftpSession.release();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <S extends SftpSession> void executeSessionWithoutResult(SessionCallbackWithoutResult<S> action) throws SessionException {
+        Assert.notNull(action, "Callback object must not be null");
+        this.executeSession(sftpSession -> {
+            action.doInSession((S) sftpSession);
             return null;
         });
     }
@@ -53,9 +66,9 @@ public class SftpTemplate {
      *
      * @param from the path to the remote file.
      * @param to   the path to the local file.
-     * @throws SftpException an IO exception during remote interaction or file not found.
+     * @throws SessionException an IO exception during remote interaction or file not found.
      */
-    public void download(String from, String to) throws SftpException {
+    public void download(String from, String to) {
         this.executeWithoutResult(channelSftp -> new ChannelSftpWrapper(channelSftp).download(from, to));
     }
 
@@ -64,9 +77,9 @@ public class SftpTemplate {
      *
      * @param from the path to the local file.
      * @param to   the path to the remote file.
-     * @throws SftpException an IO exception during remote interaction or file not found.
+     * @throws SessionException an IO exception during remote interaction or file not found.
      */
-    public void upload(String from, String to) throws SftpException {
+    public void upload(String from, String to) {
         this.executeWithoutResult(channelSftp -> new ChannelSftpWrapper(channelSftp).upload(from, to));
     }
 
@@ -75,9 +88,9 @@ public class SftpTemplate {
      *
      * @param path the remote path.
      * @return true if remote path exists.
-     * @throws SftpException an IO exception during remote interaction.
+     * @throws SessionException an IO exception during remote interaction.
      */
-    public boolean exists(String path) throws SftpException {
+    public boolean exists(String path) {
         return this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).exists(path));
     }
 
@@ -86,9 +99,9 @@ public class SftpTemplate {
      *
      * @param path the remote path.
      * @return file list.
-     * @throws SftpException an IO exception during remote interaction or path not found.
+     * @throws SessionException an IO exception during remote interaction or path not found.
      */
-    public LsEntry[] list(String path) throws SftpException {
+    public LsEntry[] list(String path) {
         return this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).list(path));
     }
 }

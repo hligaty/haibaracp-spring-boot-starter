@@ -1,7 +1,6 @@
 package io.github.hligaty.haibaracp.core;
 
 import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.SftpException;
 
 /**
  * {@link SftpCallback} with no result is returned.
@@ -16,7 +15,7 @@ public interface SftpCallbackWithoutResult {
      * closing the connection or handling exceptions.
      *
      * @param channelSftp active Sftp channel.
-     * @throws SftpException a sftp exception during remote interaction.
+     * @throws SessionException a sftp exception during remote interaction.
      */
-    void doInSftp(ChannelSftp channelSftp) throws SftpException;
+    void doInSftp(ChannelSftp channelSftp) throws SessionException;
 }
