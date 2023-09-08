@@ -17,13 +17,14 @@ import java.util.Vector;
  * @author hligaty
  */
 public class ChannelSftpWrapper {
-    private static final String SEPARATOR = "/";
+    private static final char separatorChar = '/';
+    private static final String separator = String.valueOf(separatorChar);
     private final ChannelSftp channelSftp;
 
     public ChannelSftpWrapper(ChannelSftp channelSftp) {
         this.channelSftp = channelSftp;
     }
-
+    
     /**
      * Switch the directory. If the directory does not exist, recursively create.
      *
@@ -32,7 +33,7 @@ public class ChannelSftpWrapper {
      */
     public final void cdAndMkdir(String path) throws SessionException {
         Assert.hasLength(path, "Path must not be null");
-        path = Paths.get(path).normalize().toString();
+        path = Paths.get(path).normalize().toString().replace(File.separatorChar, separatorChar);
         if (path.isEmpty()) {
             return;
         }
@@ -42,11 +43,14 @@ public class ChannelSftpWrapper {
             if (e.getCause() instanceof SftpException sftpException && sftpException.id != ChannelSftp.SSH_FX_NO_SUCH_FILE) {
                 throw new SessionException("Failed to change remote directory '" + path + "'." + e.getMessage(), e);
             }
-            if (path.startsWith(SEPARATOR)) {
-                cd(SEPARATOR);
+            if (path.startsWith(separator)) {
+                cd(separator);
             }
-            String[] dirs = path.split(SEPARATOR);
+            String[] dirs = path.split(separator);
             for (String dir : dirs) {
+                if (dir.isEmpty()) {
+                    continue;
+                }
                 if (!isDir(dir)) {
                     mkdir(dir);
                 }
@@ -162,7 +166,7 @@ public class ChannelSftpWrapper {
         }
         prepareUpload(to);
         try {
-            channelSftp.put(from, to.substring(to.lastIndexOf(SEPARATOR) + 1));
+            channelSftp.put(from, to.substring(to.lastIndexOf(separatorChar) + 1));
         } catch (SftpException e) {
             throw new SessionException("Cannot put for file '" + from + "'", e);
         }
@@ -176,14 +180,14 @@ public class ChannelSftpWrapper {
         Assert.hasLength(to, "To must not be null");
         prepareUpload(to);
         try {
-            channelSftp.put(from, to.substring(to.lastIndexOf(SEPARATOR) + 1));
+            channelSftp.put(from, to.substring(to.lastIndexOf(separatorChar) + 1));
         } catch (SftpException e) {
             throw new SessionException("Cannot put for file '" + from + "'", e);
         }
     }
 
     private void prepareUpload(String to) {
-        String dir = to.substring(0, to.lastIndexOf(SEPARATOR) + 1);
+        String dir = to.substring(0, to.lastIndexOf(separatorChar) + 1);
         if (!dir.isEmpty()) {
             cdAndMkdir(dir);
         }
