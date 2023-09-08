@@ -3,6 +3,9 @@ package io.github.hligaty.haibaracp.core;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import org.springframework.util.Assert;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  * @author hligaty
  */
@@ -73,6 +76,18 @@ public class SftpTemplate {
     }
 
     /**
+     * Download file.
+     * Support relative path and absolute path: "/home/haibara/aptx4869.docx" or "aptx4869.docx".
+     *
+     * @param from the path to the remote file.
+     * @param to   the outputStream to the local file.
+     * @throws SessionException an IO exception during remote interaction or file not found.
+     */
+    public void download(String from, OutputStream to) {
+        this.executeWithoutResult(channelSftp -> new ChannelSftpWrapper(channelSftp).download(from, to));
+    }
+
+    /**
      * Upload file. Create recursively when remote directory does not exist.
      *
      * @param from the path to the local file.
@@ -80,6 +95,17 @@ public class SftpTemplate {
      * @throws SessionException an IO exception during remote interaction or file not found.
      */
     public void upload(String from, String to) {
+        this.executeWithoutResult(channelSftp -> new ChannelSftpWrapper(channelSftp).upload(from, to));
+    }
+
+    /**
+     * Upload file. Create recursively when remote directory does not exist.
+     *
+     * @param from the inputStream to the local file.
+     * @param to   the path to the remote file.
+     * @throws SessionException an IO exception during remote interaction or file not found.
+     */
+    public void upload(InputStream from, String to) {
         this.executeWithoutResult(channelSftp -> new ChannelSftpWrapper(channelSftp).upload(from, to));
     }
 

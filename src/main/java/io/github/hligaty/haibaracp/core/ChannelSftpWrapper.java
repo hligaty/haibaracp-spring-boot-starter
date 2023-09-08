@@ -6,6 +6,8 @@ import org.springframework.util.Assert;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Paths;
 import java.util.Vector;
 
@@ -125,11 +127,28 @@ public class ChannelSftpWrapper {
         try {
             channelSftp.get(from, to);
         } catch (SftpException e) {
-            if (e.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
-                throw new SessionException("Remote file '" + from + "' not exists.", e);
-            }
-            throw new SessionException("Cannot get for file '" + from + "'", e);
+            handleDownloadSftpException(from, e);
         }
+    }
+
+    /**
+     * @see SftpTemplate#download(String, OutputStream)
+     */
+    public void download(String from, OutputStream to) throws SessionException {
+        Assert.hasLength(from, "From must not be null");
+        Assert.notNull(to, "To must not be null");
+        try {
+            channelSftp.get(from, to);
+        } catch (SftpException e) {
+            handleDownloadSftpException(from, e);
+        }
+    }
+
+    private static void handleDownloadSftpException(String from, SftpException e) {
+        if (e.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
+            throw new SessionException("Remote file '" + from + "' not exists.", e);
+        }
+        throw new SessionException("Cannot get for file '" + from + "'", e);
     }
 
     /**
@@ -141,14 +160,32 @@ public class ChannelSftpWrapper {
         if (!new File(from).exists()) {
             throw new SessionException("Local file '" + from + "' not exists.", new FileNotFoundException(from));
         }
-        String dir = to.substring(0, to.lastIndexOf(SEPARATOR) + 1);
-        if (!dir.isEmpty()) {
-            cdAndMkdir(dir);
-        }
+        prepareUpload(to);
         try {
             channelSftp.put(from, to.substring(to.lastIndexOf(SEPARATOR) + 1));
         } catch (SftpException e) {
             throw new SessionException("Cannot put for file '" + from + "'", e);
+        }
+    }
+
+    /**
+     * @see SftpTemplate#upload(InputStream, String)
+     */
+    public void upload(InputStream from, String to) throws SessionException {
+        Assert.notNull(from, "From must not be null");
+        Assert.hasLength(to, "To must not be null");
+        prepareUpload(to);
+        try {
+            channelSftp.put(from, to.substring(to.lastIndexOf(SEPARATOR) + 1));
+        } catch (SftpException e) {
+            throw new SessionException("Cannot put for file '" + from + "'", e);
+        }
+    }
+
+    private void prepareUpload(String to) {
+        String dir = to.substring(0, to.lastIndexOf(SEPARATOR) + 1);
+        if (!dir.isEmpty()) {
+            cdAndMkdir(dir);
         }
     }
 
