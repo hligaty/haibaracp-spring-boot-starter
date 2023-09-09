@@ -1,6 +1,10 @@
 package io.github.hligaty.haibaracp.core;
 
-import com.jcraft.jsch.*;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
+import com.jcraft.jsch.UserInfo;
 import io.github.hligaty.haibaracp.autoconfig.SftpAutoConfiguration;
 import io.github.hligaty.haibaracp.config.ClientProperties;
 import io.github.hligaty.haibaracp.config.PoolProperties;
@@ -8,8 +12,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Sftp connect object.
- *
+ * A session to a sftp server. You can override methods {@link #createJschSession(ClientProperties)},
+ * {@link #test()}, and {@link #reset()} to modify or obtain capabilities beyond sftp.
+ * 
  * @author hligaty
  */
 public class SftpSession {
@@ -41,7 +46,9 @@ public class SftpSession {
     }
 
     /**
-     * Create a Jsch Session.
+     * Create a Jsch Session. Subclasses can override this method to define the creation process of JschSession and
+     * create more types of channels(
+     * {@code channelExec etc....}.
      *
      * @param clientProperties properties for sftp.
      * @return {@link com.jcraft.jsch.Session}
@@ -104,7 +111,7 @@ public class SftpSession {
     }
 
     /**
-     * Test connect.
+     * Test connect. Subclasses can override this method to define more validations.
      *
      * @return true if connect available.
      */
@@ -120,7 +127,7 @@ public class SftpSession {
     }
 
     /**
-     * Reset connect.
+     * Reset connect. Subclasses can override this method to define more resets.
      *
      * @return true If the reset is successful.
      */
@@ -133,9 +140,6 @@ public class SftpSession {
         }
     }
 
-    /**
-     * Disconnect the connection.
-     */
     void disconnect() {
         if (session != null) {
             session.disconnect();
@@ -151,11 +155,17 @@ public class SftpSession {
             sftpSessionProvider.release(this);
         }
     }
-    
+
+    /**
+     * @return jsch session
+     */
     public Session jschSession() {
         return session;
     }
 
+    /**
+     * @return jsch channelSftp
+     */
     public ChannelSftp channelSftp() {
         return channelSftp;
     }

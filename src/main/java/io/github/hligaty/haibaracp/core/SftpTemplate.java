@@ -1,16 +1,29 @@
 package io.github.hligaty.haibaracp.core;
 
 import com.jcraft.jsch.ChannelSftp.LsEntry;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
+ * Helper class that simplifies Sftp operation code.
+ * <p>
+ * The central method is execute, supporting Sftp operation code implementing the {@link SessionCallback} interface. It
+ * provides {@link SftpSession} handling such that neither the {@link SessionCallback} implementation nor the calling
+ * code needs to explicitly care about retrieving/closing Sftp sessions, or handling Session lifecycle
+ * exceptions. For typical single step actions, there are various convenience methods.
+ * <p>
+ * Once configured, this class is thread-safe.
+ * <p>
+ * This is the central class in Sftp support.
+ *
+ * @param <S> the SftpSession type against which the template works
  * @author hligaty
  */
-public class SftpTemplate {
-    
+public class SftpTemplate<S extends SftpSession> {
+
     private final SftpSessionFactory sftpSessionFactory;
 
     public SftpTemplate(SftpSessionFactory sftpSessionFactory) {
@@ -25,12 +38,13 @@ public class SftpTemplate {
      * @return object returned by the action.
      * @throws SessionException a sftp exception during remote interaction.
      */
+    @Nullable
     public <T> T execute(SftpCallback<T> action) throws SessionException {
         return executeSession(sftpSession -> action.doInSftp(sftpSession.channelSftp()));
     }
 
     /**
-     * Executes the given action object within a connection, which can be exposed or not.
+     * Executes the given action object within a sftp channel, which can be exposed or not.
      *
      * @param action callback object that specifies the Sftp action.
      * @throws SessionException an IO exception during remote interaction.
@@ -43,22 +57,38 @@ public class SftpTemplate {
         });
     }
 
+    /**
+     * Executes the given action object within a sftp session, which can be exposed or not.
+     *
+     * @param action callback object that specifies the Sftp session action.
+     * @param <T>    return type
+     * @return object returned by the action.
+     * @throws SessionException an IO exception during remote interaction.
+     */
     @SuppressWarnings("unchecked")
-    public <S extends SftpSession, T> T executeSession(SessionCallback<S, T> action) throws SessionException {
+    @Nullable
+    public <T> T executeSession(SessionCallback<S, T> action) throws SessionException {
         Assert.notNull(action, "Callback object must not be null");
         SftpSession sftpSession = sftpSessionFactory.getSftpSession();
         try {
             return action.doInSession((S) sftpSession);
+        } catch (Exception e) {
+            throw new SessionException("SftpSession error on callback: " + e.getMessage(), e);
         } finally {
             sftpSession.release();
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <S extends SftpSession> void executeSessionWithoutResult(SessionCallbackWithoutResult<S> action) throws SessionException {
+    /**
+     * Executes the given action object within a sftp session, which can be exposed or not.
+     *
+     * @param action callback object that specifies the Sftp session action.
+     * @throws SessionException an IO exception during remote interaction.
+     */
+    public void executeSessionWithoutResult(SessionCallbackWithoutResult<S> action) throws SessionException {
         Assert.notNull(action, "Callback object must not be null");
         this.executeSession(sftpSession -> {
-            action.doInSession((S) sftpSession);
+            action.doInSession(sftpSession);
             return null;
         });
     }
@@ -117,7 +147,7 @@ public class SftpTemplate {
      * @throws SessionException an IO exception during remote interaction.
      */
     public boolean exists(String path) {
-        return this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).exists(path));
+        return Boolean.TRUE.equals(this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).exists(path)));
     }
 
     /**
@@ -130,4 +160,5 @@ public class SftpTemplate {
     public LsEntry[] list(String path) {
         return this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).list(path));
     }
+
 }
