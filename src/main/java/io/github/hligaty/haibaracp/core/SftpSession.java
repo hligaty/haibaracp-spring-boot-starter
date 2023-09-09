@@ -6,6 +6,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.UserInfo;
 import io.github.hligaty.haibaracp.config.ClientProperties;
+import org.springframework.lang.NonNull;
 
 /**
  * A session to a sftp server. You can override methods {@link #createJschSession(ClientProperties)},
@@ -49,6 +50,7 @@ public class SftpSession {
      * @return {@link com.jcraft.jsch.Session}
      * @throws Exception an exception during create session.
      */
+    @NonNull
     protected Session createJschSession(ClientProperties clientProperties) throws Exception {
         JSch jsch = new JSch();
         Session session = jsch.getSession(clientProperties.getUsername(), clientProperties.getHost(), clientProperties.getPort());
