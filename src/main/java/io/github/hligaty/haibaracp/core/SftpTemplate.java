@@ -1,9 +1,12 @@
 package io.github.hligaty.haibaracp.core;
 
 import com.jcraft.jsch.ChannelSftp.LsEntry;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -72,7 +75,8 @@ public class SftpTemplate<S extends SftpSession> {
         SftpSession sftpSession = sftpSessionFactory.getSftpSession();
         try {
             return action.doInSession((S) sftpSession);
-        } catch (Exception e) {
+        } catch (SftpException | JSchException | IOException e) {
+            // Expect the exception here to be thrown by the Jsch API
             throw new SessionException("SftpSession error on callback: " + e.getMessage(), e);
         } finally {
             sftpSession.release();

@@ -1,6 +1,10 @@
 package io.github.hligaty.haibaracp.core;
 
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import org.springframework.lang.Nullable;
+
+import java.io.IOException;
 
 /**
  * Callback interface for Session 'low level' code. To be used with {@link SftpTemplate} execution methods, often as
@@ -20,9 +24,11 @@ public interface SessionCallback<S extends SftpSession, T> {
      *
      * @param sftpSession active Sftp session.
      * @return a result object or null if none.
-     * @throws Exception a sftp session exception during remote interaction.
+     * @throws SftpException a sftp exception during remote interaction.
+     * @throws JSchException a sftp session exception during remote interaction.
+     * @throws IOException a sftp session exception during remote interaction.
      */
     @Nullable
-    T doInSession(S sftpSession) throws Exception;
-    
+    T doInSession(S sftpSession) throws SftpException, JSchException, IOException;
+
 }
