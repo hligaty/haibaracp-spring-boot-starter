@@ -2,7 +2,6 @@ package io.github.hligaty.haibaracp.core;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
-import org.springframework.util.Assert;
 
 import java.io.File;
 import java.io.InputStream;
@@ -31,7 +30,6 @@ public class ChannelSftpWrapper {
      * @throws SftpException an IO exception during remote interaction.
      */
     public final void cdAndMkdir(String path) throws SftpException {
-        Assert.hasLength(path, "Path must not be empty");
         path = Paths.get(path).normalize().toString().replace(File.separatorChar, separatorChar);
         if (path.isEmpty()) {
             return;
@@ -107,7 +105,7 @@ public class ChannelSftpWrapper {
     }
 
     /**
-     * Check if the remote file or directory exists.
+     * @see SftpTemplate#exists(String)
      */
     public boolean exists(String path) throws SftpException {
         try {
@@ -125,8 +123,6 @@ public class ChannelSftpWrapper {
      * @see SftpTemplate#download(String, String)
      */
     public void download(String from, String to) throws SftpException {
-        Assert.hasLength(from, "From must not be empty");
-        Assert.hasLength(to, "To must not be empty");
         try {
             channelSftp.get(from, to);
         } catch (SftpException e) {
@@ -138,8 +134,6 @@ public class ChannelSftpWrapper {
      * @see SftpTemplate#download(String, OutputStream)
      */
     public void download(String from, OutputStream to) throws SftpException {
-        Assert.hasLength(from, "From must not be empty");
-        Assert.notNull(to, "To must not be null");
         try {
             channelSftp.get(from, to);
         } catch (SftpException e) {
@@ -158,8 +152,6 @@ public class ChannelSftpWrapper {
      * @see SftpTemplate#upload(String, String)
      */
     public void upload(String from, String to) throws SftpException {
-        Assert.hasLength(from, "From must not be empty");
-        Assert.hasLength(to, "To must not be empty");
         prepareUpload(to);
         try {
             channelSftp.put(from, to.substring(to.lastIndexOf(separatorChar) + 1));
@@ -172,8 +164,6 @@ public class ChannelSftpWrapper {
      * @see SftpTemplate#upload(InputStream, String)
      */
     public void upload(InputStream from, String to) throws SftpException {
-        Assert.notNull(from, "From must not be null");
-        Assert.hasLength(to, "To must not be empty");
         prepareUpload(to);
         try {
             channelSftp.put(from, to.substring(to.lastIndexOf(separatorChar) + 1));
@@ -193,7 +183,6 @@ public class ChannelSftpWrapper {
      * @see SftpTemplate#list(String)
      */
     public ChannelSftp.LsEntry[] list(String path) throws SftpException {
-        Assert.hasLength(path, "Path must not be empty");
         try {
             Vector<?> lsEntries = this.channelSftp.ls(path);
             if (lsEntries == null) {
@@ -202,7 +191,9 @@ public class ChannelSftpWrapper {
             ChannelSftp.LsEntry[] entries = new ChannelSftp.LsEntry[lsEntries.size()];
             for (int i = 0; i < lsEntries.size(); i++) {
                 Object next = lsEntries.get(i);
-                Assert.state(next instanceof ChannelSftp.LsEntry, "Expected only LsEntry instances from channel.ls()");
+                if (!(next instanceof ChannelSftp.LsEntry)) {
+                    throw new IllegalStateException("Expected only LsEntry instances from channel.ls()");
+                }
                 entries[i] = (ChannelSftp.LsEntry) next;
             }
             return entries;

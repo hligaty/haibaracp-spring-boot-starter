@@ -43,6 +43,7 @@ public class SftpTemplate<S extends SftpSession> {
      */
     @Nullable
     public <T> T execute(SftpCallback<T> action) throws SessionException {
+        Assert.notNull(action, "Callback object must not be null");
         return executeSession(sftpSession -> action.doInSftp(sftpSession.channelSftp()));
     }
 
@@ -106,6 +107,8 @@ public class SftpTemplate<S extends SftpSession> {
      * @throws SessionException an IO exception during remote interaction or file not found.
      */
     public void download(String from, String to) {
+        Assert.hasLength(from, "From must not be empty");
+        Assert.hasLength(to, "To must not be empty");
         this.executeWithoutResult(channelSftp -> new ChannelSftpWrapper(channelSftp).download(from, to));
     }
 
@@ -118,6 +121,8 @@ public class SftpTemplate<S extends SftpSession> {
      * @throws SessionException an IO exception during remote interaction or file not found.
      */
     public void download(String from, OutputStream to) {
+        Assert.hasLength(from, "From must not be empty");
+        Assert.notNull(to, "To must not be null");
         this.executeWithoutResult(channelSftp -> new ChannelSftpWrapper(channelSftp).download(from, to));
     }
 
@@ -129,6 +134,8 @@ public class SftpTemplate<S extends SftpSession> {
      * @throws SessionException an IO exception during remote interaction or file not found.
      */
     public void upload(String from, String to) {
+        Assert.hasLength(from, "From must not be empty");
+        Assert.hasLength(to, "To must not be empty");
         this.executeWithoutResult(channelSftp -> new ChannelSftpWrapper(channelSftp).upload(from, to));
     }
 
@@ -140,6 +147,8 @@ public class SftpTemplate<S extends SftpSession> {
      * @throws SessionException an IO exception during remote interaction or file not found.
      */
     public void upload(InputStream from, String to) {
+        Assert.notNull(from, "From must not be null");
+        Assert.hasLength(to, "To must not be empty");
         this.executeWithoutResult(channelSftp -> new ChannelSftpWrapper(channelSftp).upload(from, to));
     }
 
@@ -151,6 +160,7 @@ public class SftpTemplate<S extends SftpSession> {
      * @throws SessionException an IO exception during remote interaction.
      */
     public boolean exists(String path) {
+        Assert.hasLength(path, "Path must not be empty");
         return Boolean.TRUE.equals(this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).exists(path)));
     }
 
@@ -162,6 +172,7 @@ public class SftpTemplate<S extends SftpSession> {
      * @throws SessionException an IO exception during remote interaction or path not found.
      */
     public LsEntry[] list(String path) {
+        Assert.hasLength(path, "Path must not be empty");
         return this.execute(channelSftp -> new ChannelSftpWrapper(channelSftp).list(path));
     }
 

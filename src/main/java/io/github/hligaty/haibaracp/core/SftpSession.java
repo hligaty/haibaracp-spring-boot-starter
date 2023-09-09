@@ -5,11 +5,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.UserInfo;
-import io.github.hligaty.haibaracp.autoconfig.SftpAutoConfiguration;
 import io.github.hligaty.haibaracp.config.ClientProperties;
-import io.github.hligaty.haibaracp.config.PoolProperties;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * A session to a sftp server. You can override methods {@link #createJschSession(ClientProperties)},
@@ -34,8 +30,7 @@ public class SftpSession {
 
     public SftpSession(ClientProperties clientProperties) {
         try {
-            this.session = createJschSession(clientProperties);
-            Assert.notNull(session, "Session is required; it must not be null");
+            session = createJschSession(clientProperties);
             channelSftp = (ChannelSftp) session.openChannel("sftp");
             channelSftp.connect();
             originalDir = channelSftp.pwd();
@@ -53,8 +48,6 @@ public class SftpSession {
      * @param clientProperties properties for sftp.
      * @return {@link com.jcraft.jsch.Session}
      * @throws Exception an exception during create session.
-     * @see SftpSessionFactory
-     * @see SftpAutoConfiguration#sftpSessionFactory(ClientProperties, PoolProperties)
      */
     protected Session createJschSession(ClientProperties clientProperties) throws Exception {
         JSch jsch = new JSch();
@@ -67,7 +60,7 @@ public class SftpSession {
             session.setConfig("StrictHostKeyChecking", "no");
             session.setPassword(clientProperties.getPassword());
         }
-        if (StringUtils.hasText(clientProperties.getKex())) {
+        if (clientProperties.getKex() != null) {
             session.setConfig("kex", clientProperties.getKex());
         }
         session.connect(clientProperties.getConnectTimeout());
