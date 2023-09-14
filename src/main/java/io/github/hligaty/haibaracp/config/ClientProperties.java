@@ -4,6 +4,7 @@ import com.jcraft.jsch.JSch;
 import io.github.hligaty.haibaracp.core.JschLogger;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Map;
 import java.util.StringJoiner;
 
 /**
@@ -49,6 +50,11 @@ public class ClientProperties {
      * Enable jsch log, Cannot be individually turned on or off for one of multiple hosts.
      */
     private boolean enabledLog = false;
+
+    /**
+     * Jsch extensions properties
+     */
+    private Map<String, Object> extensions;
 
     public String getHost() {
         return host;
@@ -118,6 +124,7 @@ public class ClientProperties {
                 .add("connectTimeout=" + connectTimeout)
                 .add("kex='" + kex + "'")
                 .add("enabledLog=" + enabledLog)
+                .add("extensions=" + extensions)
                 .toString();
     }
 
@@ -136,5 +143,13 @@ public class ClientProperties {
 
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
+    }
+
+    public Map<String, Object> getExtensions() {
+        return extensions;
+    }
+
+    public void setExtensions(Map<String, Object> extensions) {
+        this.extensions = extensions;
     }
 }
