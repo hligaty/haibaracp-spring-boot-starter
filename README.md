@@ -26,7 +26,7 @@ HaibaraCP is a SpringBoot Starter for SFTP, which supports password and key  log
 | spring boot version | haibaracp |
 | :-----------------: | :-------: |
 |        2.x.x        |   1.2.3   |
-|        3.x.x        |   2.0.0   |
+|        3.x.x        |   2.1.0   |
 
 Dependence Apache commons-pool2:
 
@@ -71,56 +71,13 @@ sftp:
   kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
 ```
 
-### Multiple hosts(removal)
-
-For example, two hosts, one password login and one key login:
-
-```yml
-sftp:
-  enabled-log: false
-  hosts:
-    remote-1:
-      host: 127.0.0.1
-      port: 22
-      username: root
-      password: 123456
-      kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
-    local-1:
-      host: 127.0.0.1
-      port: 22
-      username: root
-      strict-host-key-checking: true
-      key-path: C:\\Users\\user\\.ssh\\id_rsa
-      password: Jui8cv@kK9!0
-      kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
-```
-
 ### Connect Pool
-
-One host：
 
 ```yml
 sftp:
   pool:
     min-idle: 1
     max-idle: 8
-    max-active: 8
-    max-wait: -1
-    test-on-borrow: true
-    test-on-return: false
-    test-while-idle: true
-    time-between-eviction-runs: 600000
-    min-evictable-idle-time-millis: 1800000
-```
-
-Multiple hosts：
-
-```yml
-sftp:
-  pool:
-    min-idle-per-key: 1
-    max-idle-per-key: 8
-    max-active-per-key: 8
     max-active: 8
     max-wait: -1
     test-on-borrow: true
@@ -151,7 +108,6 @@ public class XXXService {
 
 ## API
 
-- All methods may throw `SftpException`, which usually means there is a problem with the connection, or the file you uploaded or downloaded does not exist.
 - SFTP operations can change the working directory, so the framework resets the working directory to the original directory before the connection is returned to the pool. Note that this only resets the remote working path, not the local working path (usually you don't care about the local working path).
 
 The following instructions are all explained using the configuration in the `Configuration` section, so the work directory is `/root`.
@@ -237,41 +193,57 @@ try (OutputStream outputStream = Files.newOutputStream(Paths.get("/root/aptx4869
 }
 ```
 
-###  Multiple hosts(removal)
+## SftpSessionFactory
 
-To use SftpTemplate in the connection pool of multiple connections from different hosts, you need to specify the connection to be used for HaibaraCP, otherwise a `NullPointerException` will be thrown. The following describes how to specify the connection:
-
-- `HostHolder.changeHost(string)`: Specify the connection to be used next  time through hostName (that is, the key in the map under the specified  configuration file sftp.hosts. The following hostName will not be  explained repeatedly). Note that it can only specify the next  connection! ! !
+A factory used for creating SftpSession, which you will use when you need to customize the creation of a Jsch Session or extend the functionality of SftpSession, such as:
 
 ```java
-HostHolder.changeHost("remote-1");
-// success
-sftpTemplate.execute(ChannelSftp::pwd);
-// NullPointerException
-sftpTemplate.execute(ChannelSftp::pwd);
-```
+@Configuration(proxyBeanMethods = false)
+public class SftpConfiguration {
 
-- `HostHolder.changeHost(string, boolean)`: It is used when calling the  same host connection continuously to avoid setting the hostName once when executing SftpTemplate once. Pay attention to use with  `HostHolder.clearHost()`! ! !
+    @Bean
+    public SftpSessionFactory sftpSessionFactory(ClientProperties clientProperties, PoolProperties poolProperties) {
+        return new SftpSessionFactory(clientProperties, poolProperties) {
+            @Override
+            public SftpSession getSftpSession(ClientProperties clientProperties) {
+                return new XxSftpSession(clientProperties);
+            }
+        };
+    }
+    
+    public static class XxSftpSession extends SftpSession {
+        
+        private Channel fooChannel;
+        
+        public FooSftpSession(ClientProperties clientProperties) {
+            super(clientProperties);
+        }
 
-```java
-HostHolder.changeHost("remote-1", false);
-try {
-  sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
-  sftpTemplate.upload("D:\\aptx4869.pdf", "haibara/aptx4869.pdf");
-  sftpTemplate.upload("D:\\aptx4869.doc", "aptx4869.doc");
-} finally {
-  HostHolder.clearHost();
+        @Override
+        protected Session createJschSession(ClientProperties clientProperties) throws Exception {
+            Session jschSession = super.createJschSession(clientProperties);
+            fooChannel = jschSession.openChannel("foo");
+            return jschSession;
+        }
+
+        public Channel getFooChannel() {
+            return xxChannel;
+        }
+    }
+
+    @Bean
+    public SftpTemplate<FooSftpSession> sftpTemplate(SftpSessionFactory sftpSessionFactory) {
+        return new SftpTemplate<>(sftpSessionFactory);
+    }
 }
 ```
 
--  `HostHolder.hostNames() ` and ` HostHolder.hostNames(predict < string >) `: get the Names of all or filtered host connections. The two connection switching methods described above need to display the specified hostName, but sometimes the configured n host connections need to be executed in batch. At this time, all or filtered hostName sets can be obtained through this method
+Then, you can use it in the SftpTemplate like this:
 
 ```java
-// Get all host Name starting with "remote-"
-for (String hostName : HostHolder.hostNames(s -> s.startsWith("remote-"))) {
-  HostHolder.changeHost(hostName);
-  sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
-}
+sftpTemplate.executeSessionWithoutResult(sftpSession -> {
+    Channel fooChannel = sftpSession.getFooChannel();
+});
 ```
 
 ## Key format
@@ -301,7 +273,7 @@ Haibaracp uses jsch as the implementation of SFTP, and jsch does not support the
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.2.3</version>
+    <version>x.x.x</version>
     <exclusions>
         <exclusion>
             <groupId>com.jcraft</groupId>
@@ -321,8 +293,9 @@ Otherwise you will see [JSchException: invalid privatekey](https://github.com/mw
 
 ## Roadmap
 
-- [ ] Provide a SessionFactory Bean for custom connection creation
-- [ ] Remove native support for multiple hosts
+## ChangeLog
+
+ [CHANGELOG.md](CHANGELOG.md) 
 
 ## Thanks for free JetBrains Open Source license
 

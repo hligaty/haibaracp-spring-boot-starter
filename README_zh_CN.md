@@ -26,7 +26,7 @@ HaibaraCP 是一个 SFTP 的 SpringBoot Starter，支持密码和密钥登录以
 | spring boot version | haibaracp |
 | :-----------------: | :-------: |
 |        2.x.x        |   1.2.3   |
-|        3.x.x        |   2.0.0   |
+|        3.x.x        |   2.1.0   |
 
 依赖 Apache commons-pool2：
 
@@ -71,57 +71,13 @@ sftp:
   kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
 ```
 
-### 多 Host（移除）
-
-比如两个 Host，一个密码登录，一个密钥登录：
-
-```yml
-sftp:
-  enabled-log: false
-  hosts:
-    # 地址的名字，你可以通过它来切换连接
-    remote-1:
-      host: 127.0.0.1
-      port: 22
-      username: root
-      password: 123456
-      kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
-    local-1:
-      host: 127.0.0.1
-      port: 22
-      username: root
-      strict-host-key-checking: true
-      key-path: C:\\Users\\user\\.ssh\\id_rsa
-      password: Jui8cv@kK9!0
-      kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
-```
-
 ### 连接池（可以不配置）
-
-单 Host 连接池配置：
 
 ```yml
 sftp:
   pool:
     min-idle: 1
     max-idle: 8
-    max-active: 8
-    max-wait: -1
-    test-on-borrow: true
-    test-on-return: false
-    test-while-idle: true
-    time-between-eviction-runs: 600000
-    min-evictable-idle-time-millis: 1800000
-```
-
-多 Host 连接池配置：
-
-```yml
-sftp:
-  pool:
-    min-idle-per-key: 1
-    max-idle-per-key: 8
-    max-active-per-key: 8
     max-active: 8
     max-wait: -1
     test-on-borrow: true
@@ -138,9 +94,9 @@ HaibaraCP 提供 SftpTemplate 类，它与 `spring-boot-starter-data-redis`  提
 ```java
 @Component
 public class XXXService {
-  private final SftpTemplate sftpTemplate;
+  private final SftpTemplate<SftpSession> sftpTemplate;
 
-  public XXXService(SftpTemplate sftpTemplate) {
+  public XXXService(SftpTemplate<SftpSession> sftpTemplate) {
     this.sftpTemplate = sftpTemplate;
   }
 
@@ -152,7 +108,6 @@ public class XXXService {
 
 ## API
 
-- 所有方法都可能抛出 `SftpException`，这通常代表连接出问题了，也可能是你上传或下载的文件不存在。
 - sftp 操作可能会改变工作目录，因此在连接返回给池前，框架会重置工作目录为原始目录。注意这只会重置远端工作路径，不会重置本地工作路径（通常你并不关心本地工作路径）。
 
 下面的介绍全部使用 `配置` 章节中的配置进行说明，因此初始工作目录是 `/root`。
@@ -234,41 +189,57 @@ try (OutputStream outputStream = Files.newOutputStream(Paths.get("/root/aptx4869
 }
 ```
 
-###  多 Host（移除）
+## SftpSessionFactory
 
-在多 Host 使用  SftpTemplate 需要为 HaibaraCP 指定将要使用的连接，否则将抛出 `NullPointerException`，下面介绍了如何指定连接：
-
-- `HostHolder.changeHost(string)` ：通过 hostName （即指定配置文件 sftp.hosts 下 map 中的 key。后面的 hostName 不再重复说明） 指定下次使用的连接。注意它只能指定下一次的连接！！！
+用于创建 SftpSession 的工厂，在需要自定义创建 Jsch Session 或扩展 SftpSession功能时你会使用到它，比如：
 
 ```java
-HostHolder.changeHost("remote-1");
-// 成功打印 remote-1 对应连接的原始目录
-sftpTemplate.execute(ChannelSftp::pwd);
-// 第二次执行失败，抛出空指针
-sftpTemplate.execute(ChannelSftp::pwd);
-```
+@Configuration(proxyBeanMethods = false)
+public class SftpConfiguration {
 
-- `HostHolder.changeHost(string, boolean)`：连续调用相同 host 连接时使用，避免执行一次 SftpTemplate 就要设置一次 hostName。注意要配合 `HostHolder.clearHost()` 使用！！！
+    @Bean
+    public SftpSessionFactory sftpSessionFactory(ClientProperties clientProperties, PoolProperties poolProperties) {
+        return new SftpSessionFactory(clientProperties, poolProperties) {
+            @Override
+            public SftpSession getSftpSession(ClientProperties clientProperties) {
+                return new XxSftpSession(clientProperties);
+            }
+        };
+    }
+    
+    public static class XxSftpSession extends SftpSession {
+        
+        private Channel fooChannel;
+        
+        public FooSftpSession(ClientProperties clientProperties) {
+            super(clientProperties);
+        }
 
-```java
-HostHolder.changeHost("remote-1", false);
-try {
-  sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
-  sftpTemplate.upload("D:\\aptx4869.pdf", "haibara/aptx4869.pdf");
-  sftpTemplate.upload("D:\\aptx4869.doc", "aptx4869.doc");
-} finally {
-  HostHolder.clearHost();
+        @Override
+        protected Session createJschSession(ClientProperties clientProperties) throws Exception {
+            Session jschSession = super.createJschSession(clientProperties);
+            fooChannel = jschSession.openChannel("foo");
+            return jschSession;
+        }
+
+        public Channel getFooChannel() {
+            return xxChannel;
+        }
+    }
+
+    @Bean
+    public SftpTemplate<FooSftpSession> sftpTemplate(SftpSessionFactory sftpSessionFactory) {
+        return new SftpTemplate<>(sftpSessionFactory);
+    }
 }
 ```
 
--  `HostHolder.hostNames()` 与 `HostHolder.hostNames(Predicate<String>)`：获取所有或过滤后的 host 连接的 name。前面介绍的两种切换连接的方式都要显示指定 hostName，但有时需要批量执行配置的 n 个 host 连接，此时可以通过该方法获取所有或过滤后的 hostName 集合。
+然后在 SftpTemplate 中这样使用它：
 
 ```java
-// 获取所有以“remote-”开头的 hostName
-for (String hostName : HostHolder.hostNames(s -> s.startsWith("remote-"))) {
-  HostHolder.changeHost(hostName);
-  sftpTemplate.upload("D:\\aptx4869.docx", "/home/haibara/aptx4869.docx");
-}
+sftpTemplate.executeSessionWithoutResult(sftpSession -> {
+    Channel fooChannel = sftpSession.getFooChannel();
+});
 ```
 
 ## 密钥格式
@@ -298,7 +269,7 @@ Haibaracp 使用 Jsch 作为 SFTP 的实现，而 Jsch 不支持新的格式，�
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>1.2.3</version>
+    <version>x.x.x</version>
     <exclusions>
         <exclusion>
             <groupId>com.jcraft</groupId>
@@ -318,8 +289,9 @@ Haibaracp 使用 Jsch 作为 SFTP 的实现，而 Jsch 不支持新的格式，�
 
 ## 路线图
 
-- [ ] 提供一个 SessionFactory Bean 用于自定义创建连接
-- [ ] 移除对多个主机的原生支持
+## 变更记录
+
+ [CHANGELOG.md](CHANGELOG.md) 
 
 ## Thanks for free JetBrains Open Source license
 
