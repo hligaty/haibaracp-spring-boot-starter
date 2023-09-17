@@ -94,9 +94,9 @@ HaibaraCP provides the `SftpTemplate ` class, which is used in the same way as t
 ```java
 @Component
 public class XXXService {
-  private final SftpTemplate sftpTemplate;
+  private final SftpTemplate<SftpSession> sftpTemplate;
 
-  public XXXService(SftpTemplate sftpTemplate) {
+  public XXXService(SftpTemplate<SftpSession> sftpTemplate) {
     this.sftpTemplate = sftpTemplate;
   }
 
