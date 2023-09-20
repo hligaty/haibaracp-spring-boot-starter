@@ -28,7 +28,7 @@ import org.springframework.lang.Nullable;
 public class PoolException extends NestedRuntimeException {
 
     /**
-     * Constructs a new SessionException instance.
+     * Constructs a new PoolException instance.
      *
      * @param msg the detail message.
      * @param cause the nested exception.
