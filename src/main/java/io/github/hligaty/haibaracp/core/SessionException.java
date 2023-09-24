@@ -17,24 +17,35 @@
 package io.github.hligaty.haibaracp.core;
 
 import org.springframework.core.NestedRuntimeException;
-import org.springframework.lang.Nullable;
 
 /**
- * Exception thrown when there are issues with a connect pool.
- *
+ * Exception to be thrown on session operation failure. This could have different
+ * causes depending on the Jsch API in use but most likely thrown after the
+ * session interrupts.
+ * <p> 
+ * As this class is a runtime exception, there is no need for user code to catch
+ * it or subclasses if any error is to be considered fatal (the usual case).
+ * 
  * @author hligaty
  */
 @SuppressWarnings("serial")
-public class PoolException extends NestedRuntimeException {
+public class SessionException extends NestedRuntimeException {
 
     /**
-     * Constructs a new PoolException instance.
+     * Constructs a new SessionException instance.
      *
      * @param msg the detail message.
-     * @param cause the nested exception.
      */
-    public PoolException(@Nullable String msg, @Nullable Throwable cause) {
+    public SessionException(String msg) {
+        super(msg);
+    }
+
+    /**
+     * Constructor for SessionException.
+     * @param msg the detail message
+     * @param cause the root cause from the data access API in use
+     */
+    public SessionException(String msg, Throwable cause) {
         super(msg, cause);
     }
-    
 }

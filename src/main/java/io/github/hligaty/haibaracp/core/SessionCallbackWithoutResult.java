@@ -16,8 +16,10 @@
 
 package io.github.hligaty.haibaracp.core;
 
-import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
+
+import java.io.IOException;
 
 /**
  * {@link SftpCallback} with no result is returned.
@@ -26,15 +28,17 @@ import com.jcraft.jsch.SftpException;
  * @see SftpTemplate
  */
 @FunctionalInterface
-public interface SftpCallbackWithoutResult {
+public interface SessionCallbackWithoutResult<S extends SftpSession> {
 
     /**
-     * Gets called by {@link SftpTemplate} with an active Sftp channel. Does not need to care about activating or
+     * Gets called by {@link SftpTemplate} with an active Sftp session. Does not need to care about activating or
      * closing the connection or handling exceptions.
      *
-     * @param channelSftp active Sftp channel.
+     * @param sftpSession active Sftp session.
      * @throws SftpException a sftp exception during remote interaction.
+     * @throws JSchException a sftp session exception during remote interaction.
+     * @throws IOException a sftp session exception during remote interaction.
      */
-    void doInSftp(ChannelSftp channelSftp) throws SftpException;
+    void doInSession(S sftpSession) throws SftpException, JSchException, IOException;
 
 }

@@ -1,33 +1,50 @@
+/*
+ * Copyright 2021-2023 hligaty
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.github.hligaty.haibaracp.autoconfig;
 
-import com.jcraft.jsch.JSch;
 import io.github.hligaty.haibaracp.config.ClientProperties;
 import io.github.hligaty.haibaracp.config.PoolProperties;
-import io.github.hligaty.haibaracp.core.HostHolder;
-import io.github.hligaty.haibaracp.core.JschLogger;
-import io.github.hligaty.haibaracp.core.SftpPool;
+import io.github.hligaty.haibaracp.core.SftpSession;
+import io.github.hligaty.haibaracp.core.SftpSessionFactory;
 import io.github.hligaty.haibaracp.core.SftpTemplate;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Sftp support.
+ * 
  * @author hligaty
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ClientProperties.class, PoolProperties.class})
 public class SftpAutoConfiguration {
 
-  @Bean
-  public SftpPool sftpPool(ClientProperties clientProperties, PoolProperties poolProperties) {
-    JSch.setLogger(new JschLogger(clientProperties.isEnabledLog()));
-    return clientProperties.getHosts() == null ?
-            new SftpPool(clientProperties, poolProperties) :
-            new SftpPool(HostHolder.initHostKeys(clientProperties.getHosts()), poolProperties);
-  }
+    @Bean
+    @ConditionalOnMissingBean(SftpSessionFactory.class)
+    public SftpSessionFactory sftpSessionFactory(ClientProperties clientProperties, PoolProperties poolProperties) {
+        return new SftpSessionFactory(clientProperties, poolProperties);
+    }
 
-  @Bean
-  public SftpTemplate sftpTemplate(SftpPool sftpPool) {
-    return new SftpTemplate(sftpPool);
-  }
+    @Bean
+    @ConditionalOnMissingBean(SftpTemplate.class)
+    public SftpTemplate<SftpSession> sftpTemplate(SftpSessionFactory sftpSessionFactory) {
+        return new SftpTemplate<>(sftpSessionFactory);
+    }
 }
