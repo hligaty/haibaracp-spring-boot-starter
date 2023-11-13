@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Sftp support.
- * 
+ *
  * @author hligaty
  */
 @Configuration(proxyBeanMethods = false)

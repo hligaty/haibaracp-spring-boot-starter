@@ -28,6 +28,9 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import java.time.Duration;
 import java.util.function.Supplier;
 
+/**
+ * @author hligaty
+ */
 class SftpSessionProvider {
 
     private static final Log log = LogFactory.getLog(SftpSessionProvider.class);

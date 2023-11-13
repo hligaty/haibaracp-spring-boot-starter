@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.github.hligaty.haibaracp.autoconfig.SftpAutoConfiguration
+io.github.hligaty.haibaracp.autoconfig.SftpAutoConfiguration,\
+io.github.hligaty.haibaracp.autoconfig.SftpHealthContributorAutoConfiguration
