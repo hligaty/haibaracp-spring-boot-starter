@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>2.1.1-beta.1</version>
+    <version>2.1.1</version>
     <name>haibaracp-spring-boot-starter</name>
     <description>Starter for sftp</description>
     <url>https://github.com/hligaty/haibaracp-spring-boot-starter</url>
