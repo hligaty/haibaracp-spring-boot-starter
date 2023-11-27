@@ -18,7 +18,12 @@ package io.github.hligaty.haibaracp.core;
 
 import io.github.hligaty.haibaracp.config.ClientProperties;
 import io.github.hligaty.haibaracp.config.PoolProperties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.util.ClassUtils;
+
+import java.util.Optional;
 
 /**
  * {@link SftpSession} factory, used for custom creation {@link SftpSession}
@@ -28,15 +33,23 @@ import org.springframework.beans.factory.DisposableBean;
  */
 public class SftpSessionFactory implements DisposableBean {
 
+    private static final Log log = LogFactory.getLog(SftpSessionFactory.class);
+
+    private static final boolean COMMONS_POOL2_AVAILABLE = ClassUtils.isPresent("org.apache.commons.pool2.ObjectPool",
+            SftpSessionFactory.class.getClassLoader());
+
     private final SftpSessionProvider sftpSessionProvider;
 
     public SftpSessionFactory(ClientProperties clientProperties, PoolProperties poolProperties) {
-        this.sftpSessionProvider = new SftpSessionProvider(() -> getSftpSession(clientProperties), poolProperties);
+        SftpSessionProvider sessionProvider = new StandaloneSftpSessionProvider(() -> getSftpSession(clientProperties));
+        this.sftpSessionProvider = Optional.ofNullable(poolProperties.getEnabled()).orElse(COMMONS_POOL2_AVAILABLE)
+                ? new PoolingSftpSessionProvider(sessionProvider, poolProperties)
+                : sessionProvider;
     }
 
     /**
      * Obtain a SftpSession
-     * 
+     *
      * @param clientProperties sftp session property
      * @return sftp session
      */
@@ -45,12 +58,22 @@ public class SftpSessionFactory implements DisposableBean {
     }
 
     SftpSession getSftpSession() {
-        return sftpSessionProvider.getSftpClient();
+        SftpSession sftpClient = sftpSessionProvider.getSftpClient();
+        sftpClient.setSftpClientProvider(sftpSessionProvider);
+        return sftpClient;
     }
 
     @Override
     public void destroy() {
-        sftpSessionProvider.destroy();
+        if (sftpSessionProvider instanceof DisposableBean disposableBean) {
+            try {
+                disposableBean.destroy();
+            } catch (Exception e) {
+                if (log.isWarnEnabled()) {
+                    log.warn(sftpSessionProvider + " did not shut down gracefully.", e);
+                }
+            }
+        }
     }
 
 }

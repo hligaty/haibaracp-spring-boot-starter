@@ -27,6 +27,12 @@ import java.util.StringJoiner;
  */
 @ConfigurationProperties("sftp.pool")
 public class PoolProperties {
+
+    /**
+     * Whether to enable the pool. Enabled automatically if "commons-pool2" is available.
+     */
+    private Boolean enabled;
+    
     /**
      * Target for the minimum number of idle connections to maintain in the pool. This
      * setting only has an effect if both it and time between eviction runs are
@@ -89,6 +95,14 @@ public class PoolProperties {
      * no objects will be evicted from the pool due to idle time alone.
      */
     private long minEvictableIdleTimeMillis = 1000L * 60L * 30L;
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 
     public int getMinIdle() {
         return minIdle;
@@ -165,6 +179,7 @@ public class PoolProperties {
     @Override
     public String toString() {
         return new StringJoiner(", ", PoolProperties.class.getSimpleName() + "[", "]")
+                .add("enabled=" + enabled)
                 .add("minIdle=" + minIdle)
                 .add("maxIdle=" + maxIdle)
                 .add("maxActive=" + maxActive)
