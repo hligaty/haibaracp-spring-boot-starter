@@ -90,37 +90,6 @@ public class PoolProperties {
      */
     private long minEvictableIdleTimeMillis = 1000L * 60L * 30L;
 
-    /**
-     * Sets the target for the minimum number of idle objects to maintain in
-     * each of the keyed sub-pools. This setting only has an effect if it is
-     * positive and timeBetweenEvictionRuns is greater than zero. If this is
-     * the case, an attempt is made to ensure that each sub-pool has the required
-     * minimum number of instances during idle object eviction runs.
-     * If the configured value of minIdlePerKey is greater than the configured
-     * value for maxIdlePerKey then the value of maxIdlePerKey will be used
-     * instead.
-     */
-    private int minIdlePerKey = 1;
-
-    /**
-     * Sets the cap on the number of "idle" instances per key in the pool.
-     * If maxIdlePerKey is set too low on heavily loaded systems it is possible
-     * you will see objects being destroyed and almost immediately new objects
-     * being created. This is a result of the active threads momentarily
-     * returning objects faster than they are requesting them, causing the
-     * number of idle objects to rise above maxIdlePerKey. The best value for
-     * maxIdlePerKey for heavily loaded system will vary but the default is a
-     * good starting point.
-     */
-    private int maxIdlePerKey = 8;
-
-    /**
-     * Sets the limit on the number of object instances allocated by the pool
-     * (checked out or idle), per key. When the limit is reached, the sub-pool
-     * is said to be exhausted. A negative value indicates no limit.
-     */
-    private int maxActivePerKey = 8;
-
     public int getMinIdle() {
         return minIdle;
     }
@@ -193,30 +162,6 @@ public class PoolProperties {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
 
-    public int getMinIdlePerKey() {
-        return minIdlePerKey;
-    }
-
-    public void setMinIdlePerKey(int minIdlePerKey) {
-        this.minIdlePerKey = minIdlePerKey;
-    }
-
-    public int getMaxIdlePerKey() {
-        return maxIdlePerKey;
-    }
-
-    public void setMaxIdlePerKey(int maxIdlePerKey) {
-        this.maxIdlePerKey = maxIdlePerKey;
-    }
-
-    public int getMaxActivePerKey() {
-        return maxActivePerKey;
-    }
-
-    public void setMaxActivePerKey(int maxActivePerKey) {
-        this.maxActivePerKey = maxActivePerKey;
-    }
-
     @Override
     public String toString() {
         return new StringJoiner(", ", PoolProperties.class.getSimpleName() + "[", "]")
@@ -229,9 +174,6 @@ public class PoolProperties {
                 .add("testWhileIdle=" + testWhileIdle)
                 .add("timeBetweenEvictionRuns=" + timeBetweenEvictionRuns)
                 .add("minEvictableIdleTimeMillis=" + minEvictableIdleTimeMillis)
-                .add("minIdlePerKey=" + minIdlePerKey)
-                .add("maxIdlePerKey=" + maxIdlePerKey)
-                .add("maxActivePerKey=" + maxActivePerKey)
                 .toString();
     }
 }
