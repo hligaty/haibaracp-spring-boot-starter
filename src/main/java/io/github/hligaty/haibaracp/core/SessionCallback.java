@@ -36,7 +36,7 @@ public interface SessionCallback<S extends SftpSession, T> {
 
     /**
      * Gets called by {@link SftpTemplate} with an active Sftp session. Does not need to care about activating or
-     * closing the connection or handling exceptions.
+     * closing the sftpSession or handling exceptions.
      *
      * @param sftpSession active Sftp session.
      * @return a result object or null if none.
