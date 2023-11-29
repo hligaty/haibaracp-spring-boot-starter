@@ -34,7 +34,7 @@ public class SftpSession {
     private final ChannelSftp channelSftp;
     private final Session session;
     /**
-     * The original directory when the connection was established.
+     * The original directory when the session was established.
      */
     private final String originalDir;
 

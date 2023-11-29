@@ -34,7 +34,7 @@ public interface SftpCallback<T> {
 
     /**
      * Gets called by {@link SftpTemplate} with an active Sftp channel. Does not need to care about activating or
-     * closing the connection or handling exceptions.
+     * closing the channelSftp or handling exceptions.
      *
      * @param channelSftp active Sftp channel.
      * @return a result object or null if none.
