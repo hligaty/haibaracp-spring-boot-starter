@@ -49,7 +49,7 @@ public class SftpSession {
         try {
             session = createJschSession(clientProperties);
             channelSftp = (ChannelSftp) session.openChannel("sftp");
-            channelSftp.connect();
+            channelSftp.connect(clientProperties.getChannelConnectTimeout());
             originalDir = channelSftp.pwd();
         } catch (Exception e) {
             disconnect();
