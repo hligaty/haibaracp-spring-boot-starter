@@ -57,7 +57,11 @@ public class ClientProperties {
     /**
      * Specifies the timeout period for new session creation, in milliseconds.
      */
-    private int connectTimeout = 0;
+    private int connectTimeout = 5000;
+    /**
+     * Specifies the timeout period for new channel creation, in milliseconds.
+     */
+    private int channelConnectTimeout = 5000;
     /**
      * SSH kex algorithms.
      */
@@ -138,6 +142,7 @@ public class ClientProperties {
                 .add("keyPath='" + keyPath + "'")
                 .add("password='" + password + "'")
                 .add("connectTimeout=" + connectTimeout)
+                .add("channelConnectTimeout=" + channelConnectTimeout)
                 .add("kex='" + kex + "'")
                 .add("enabledLog=" + enabledLog)
                 .add("extensions=" + extensions)
@@ -167,5 +172,13 @@ public class ClientProperties {
 
     public void setExtensions(Map<String, Object> extensions) {
         this.extensions = extensions;
+    }
+
+    public int getChannelConnectTimeout() {
+        return channelConnectTimeout;
+    }
+
+    public void setChannelConnectTimeout(int channelConnectTimeout) {
+        this.channelConnectTimeout = channelConnectTimeout;
     }
 }
