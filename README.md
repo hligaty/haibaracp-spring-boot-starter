@@ -293,6 +293,9 @@ Otherwise you will see [JSchException: invalid privatekey](https://github.com/mw
 
 ## Roadmap
 
+- Add socket timeout param
+- Add custom create channelSftp
+
 ## ChangeLog
 
  [CHANGELOG.md](CHANGELOG.md) 
