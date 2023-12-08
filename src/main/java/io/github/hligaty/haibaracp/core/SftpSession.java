@@ -48,8 +48,7 @@ public class SftpSession {
     public SftpSession(ClientProperties clientProperties) {
         try {
             session = createJschSession(clientProperties);
-            channelSftp = (ChannelSftp) session.openChannel("sftp");
-            channelSftp.connect(clientProperties.getChannelConnectTimeout());
+            channelSftp = createJschChannel(clientProperties);
             originalDir = channelSftp.pwd();
         } catch (Exception e) {
             disconnect();
@@ -81,8 +80,23 @@ public class SftpSession {
         if (clientProperties.getKex() != null) {
             session.setConfig("kex", clientProperties.getKex());
         }
+        session.setServerAliveInterval(clientProperties.getServerAliveInterval());
         session.connect(clientProperties.getConnectTimeout());
         return session;
+    }
+
+    /**
+     * Create a Jsch ChannelSftp. Subclasses can override this method to define the creation process of Jsch ChannelSftp.
+     *
+     * @param clientProperties properties for sftp.
+     * @return {@link com.jcraft.jsch.ChannelSftp}
+     * @throws Exception an exception during create channel.
+     */
+    @NonNull
+    protected ChannelSftp createJschChannel(ClientProperties clientProperties) throws Exception {
+        ChannelSftp channelSftp = (ChannelSftp) session.openChannel("sftp");
+        channelSftp.connect(clientProperties.getChannelConnectTimeout());
+        return channelSftp;
     }
 
     private static class UserInfoImpl implements UserInfo {

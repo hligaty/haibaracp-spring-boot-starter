@@ -63,6 +63,11 @@ public class ClientProperties {
      */
     private int channelConnectTimeout = 5000;
     /**
+     * Interval to send a keep-alive message.
+     * @see java.net.Socket#setSoTimeout(int)
+     */
+    private int serverAliveInterval = 30000;
+    /**
      * SSH kex algorithms.
      */
     private String kex;
@@ -143,6 +148,7 @@ public class ClientProperties {
                 .add("password='" + password + "'")
                 .add("connectTimeout=" + connectTimeout)
                 .add("channelConnectTimeout=" + channelConnectTimeout)
+                .add("serverAliveInterval=" + serverAliveInterval)
                 .add("kex='" + kex + "'")
                 .add("enabledLog=" + enabledLog)
                 .add("extensions=" + extensions)
@@ -180,5 +186,13 @@ public class ClientProperties {
 
     public void setChannelConnectTimeout(int channelConnectTimeout) {
         this.channelConnectTimeout = channelConnectTimeout;
+    }
+
+    public int getServerAliveInterval() {
+        return serverAliveInterval;
+    }
+
+    public void setServerAliveInterval(int serverAliveInterval) {
+        this.serverAliveInterval = serverAliveInterval;
     }
 }
