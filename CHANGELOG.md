@@ -11,3 +11,12 @@ Please note that 1.3.0 is a partially incompatible update with 1.2.3.
 ## 1.3.1
 
 - feat:add Spring Boot Actuator.
+
+## 1.3.2
+
+Mainly including: Modified the default SSH connection timeout and other configurations.
+
+- fix:channelSftp connect timeout.
+- refactor:Removed unused pool properties.
+- feat:Added non pooling usage.
+- feat:Added socket timeout.

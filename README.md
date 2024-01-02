@@ -25,8 +25,8 @@ HaibaraCP is a SpringBoot Starter for SFTP, which supports password and key  log
 
 | spring boot version | haibaracp |
 | :-----------------: |:---------:|
-|        2.x.x        |   1.3.1   |
-|        3.x.x        |   2.1.1   |
+|        2.x.x        |   1.3.2   |
+|        3.x.x        |   2.1.2   |
 
 Dependence Apache commons-pool2:
 
