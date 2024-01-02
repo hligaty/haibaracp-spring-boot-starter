@@ -24,9 +24,9 @@ HaibaraCP 是一个 SFTP 的 SpringBoot Starter，支持密码和密钥登录以
 ## Maven 依赖
 
 | spring boot version | haibaracp |
-| :-----------------: | :-------: |
-|        2.x.x        |   1.3.1   |
-|        3.x.x        |   2.1.1   |
+| :-----------------: |:---------:|
+|        2.x.x        |   1.3.2   |
+|        3.x.x        |   2.1.2   |
 
 依赖 Apache commons-pool2：
 
