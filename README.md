@@ -291,11 +291,6 @@ Haibaracp uses jsch as the implementation of SFTP, and jsch does not support the
 
 Otherwise you will see [JSchException: invalid privatekey](https://github.com/mwiede/jsch/issues/12#issuecomment-662863338).
 
-## Roadmap
-
-- Add socket timeout param
-- Add custom create channelSftp
-
 ## ChangeLog
 
  [CHANGELOG.md](CHANGELOG.md) 
