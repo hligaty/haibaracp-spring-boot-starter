@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 hligaty
+ * Copyright 2021-2025 hligaty
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.UserInfo;
 import io.github.hligaty.haibaracp.config.ClientProperties;
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A session to a sftp server. You can override methods {@link #createJschSession(ClientProperties)},

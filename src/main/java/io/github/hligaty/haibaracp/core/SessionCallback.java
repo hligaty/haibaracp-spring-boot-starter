@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 hligaty
+ * Copyright 2021-2025 hligaty
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package io.github.hligaty.haibaracp.core;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 

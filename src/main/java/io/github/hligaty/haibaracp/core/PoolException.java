@@ -16,8 +16,8 @@
 
 package io.github.hligaty.haibaracp.core;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.NestedRuntimeException;
-import org.springframework.lang.Nullable;
 
 /**
  * Exception thrown when there are issues with a connect pool.
