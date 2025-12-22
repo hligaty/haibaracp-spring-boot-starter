@@ -39,12 +39,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>4.0.1</spring-boot.version>
-        <jsch.version>0.1.55</jsch.version>
+        <jsch.version>2.27.7</jsch.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.jcraft</groupId>
+            <groupId>com.github.mwiede</groupId>
             <artifactId>jsch</artifactId>
             <version>${jsch.version}</version>
         </dependency>

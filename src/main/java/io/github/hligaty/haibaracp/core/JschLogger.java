@@ -1,3 +1,19 @@
+/*
+ * Copyright 2021-2025 hligaty
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.github.hligaty.haibaracp.core;
 
 import org.apache.commons.logging.Log;
@@ -30,12 +46,17 @@ public class JschLogger implements Logger {
 
     @Override
     public void log(int level, String message) {
+        log(level, message, null);
+    }
+
+    @Override
+    public void log(int level, String message, Throwable cause) {
         switch (level) {
-            case Logger.INFO -> log.info(message);
-            case Logger.WARN -> log.warn(message);
-            case Logger.DEBUG -> log.debug(message);
-            case Logger.ERROR -> log.error(message);
-            case Logger.FATAL -> log.fatal(message);
+            case Logger.INFO -> log.info(message, null);
+            case Logger.WARN -> log.warn(message, null);
+            case Logger.DEBUG -> log.debug(message, null);
+            case Logger.ERROR -> log.error(message, null);
+            case Logger.FATAL -> log.fatal(message, null);
             default -> {
             }
         }
