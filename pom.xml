@@ -35,11 +35,10 @@
 
     <properties>
         <java.version>17</java.version>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring-boot.version>3.1.0</spring-boot.version>
+        <spring-boot.version>4.0.1</spring-boot.version>
         <jsch.version>0.1.55</jsch.version>
     </properties>
 
@@ -70,7 +69,7 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-actuator-autoconfigure</artifactId>
+            <artifactId>spring-boot-health</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>
