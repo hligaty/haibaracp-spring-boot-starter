@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 hligaty
+ * Copyright 2021-2025 hligaty
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ class PoolingSftpSessionProvider implements SftpSessionProvider, DisposableBean 
         config.setTestOnReturn(poolProperties.isTestOnReturn());
         config.setTestWhileIdle(poolProperties.isTestWhileIdle());
         config.setTimeBetweenEvictionRuns(Duration.ofMillis(poolProperties.getTimeBetweenEvictionRuns()));
-        config.setMinEvictableIdleTime(Duration.ofMillis(poolProperties.getMinEvictableIdleTimeMillis()));
+        config.setMinEvictableIdleDuration(Duration.ofMillis(poolProperties.getMinEvictableIdleTimeMillis()));
         config.setMinIdle(poolProperties.getMinIdle());
         config.setMaxIdle(poolProperties.getMaxIdle());
         config.setMaxTotal(poolProperties.getMaxActive());
