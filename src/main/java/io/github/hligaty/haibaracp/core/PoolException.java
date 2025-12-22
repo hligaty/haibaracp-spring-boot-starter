@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 hligaty
+ * Copyright 2021-2025 hligaty
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import org.springframework.core.NestedRuntimeException;
  *
  * @author hligaty
  */
-@SuppressWarnings("serial")
 public class PoolException extends NestedRuntimeException {
 
     /**
