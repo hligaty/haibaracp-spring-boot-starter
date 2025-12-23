@@ -26,8 +26,6 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.DisposableBean;
 
-import java.time.Duration;
-
 /**
  * {@link SftpSessionProvider} with connection pooling support.
  * <p>
@@ -102,12 +100,12 @@ class PoolingSftpSessionProvider implements SftpSessionProvider, DisposableBean 
 
     private GenericObjectPoolConfig<SftpSession> getPoolConfig(PoolProperties poolProperties) {
         GenericObjectPoolConfig<SftpSession> config = new GenericObjectPoolConfig<>();
-        config.setMaxWait(Duration.ofMillis(poolProperties.getMaxWait()));
+        config.setMaxWait(poolProperties.getMaxWait());
         config.setTestOnBorrow(poolProperties.isTestOnBorrow());
         config.setTestOnReturn(poolProperties.isTestOnReturn());
         config.setTestWhileIdle(poolProperties.isTestWhileIdle());
-        config.setTimeBetweenEvictionRuns(Duration.ofMillis(poolProperties.getTimeBetweenEvictionRuns()));
-        config.setMinEvictableIdleDuration(Duration.ofMillis(poolProperties.getMinEvictableIdleTimeMillis()));
+        config.setTimeBetweenEvictionRuns(poolProperties.getTimeBetweenEvictionRuns());
+        config.setMinEvictableIdleDuration(poolProperties.getMinEvictableIdleTimeMillis());
         config.setMinIdle(poolProperties.getMinIdle());
         config.setMaxIdle(poolProperties.getMaxIdle());
         config.setMaxTotal(poolProperties.getMaxActive());

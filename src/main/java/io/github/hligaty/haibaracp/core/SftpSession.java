@@ -80,8 +80,8 @@ public class SftpSession {
         if (clientProperties.getKex() != null) {
             session.setConfig("kex", clientProperties.getKex());
         }
-        session.setServerAliveInterval(clientProperties.getServerAliveInterval());
-        session.connect(clientProperties.getConnectTimeout());
+        session.setServerAliveInterval((int) clientProperties.getServerAliveInterval().toMillis());
+        session.connect((int) clientProperties.getConnectTimeout().toMillis());
         return session;
     }
 
@@ -95,7 +95,7 @@ public class SftpSession {
     @NonNull
     protected ChannelSftp createJschChannel(ClientProperties clientProperties) throws Exception {
         ChannelSftp channelSftp = (ChannelSftp) session.openChannel("sftp");
-        channelSftp.connect(clientProperties.getChannelConnectTimeout());
+        channelSftp.connect((int) clientProperties.getChannelConnectTimeout().toMillis());
         return channelSftp;
     }
 

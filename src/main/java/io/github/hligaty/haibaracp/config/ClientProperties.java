@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 hligaty
+ * Copyright 2021-2025 hligaty
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.jcraft.jsch.JSch;
 import io.github.hligaty.haibaracp.core.JschLogger;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.StringJoiner;
 
@@ -57,16 +58,16 @@ public class ClientProperties {
     /**
      * Specifies the timeout period for new session creation, in milliseconds.
      */
-    private int connectTimeout = 5000;
+    private Duration connectTimeout = Duration.ofMillis(5000);
     /**
      * Specifies the timeout period for new channel creation, in milliseconds.
      */
-    private int channelConnectTimeout = 5000;
+    private Duration channelConnectTimeout = Duration.ofMillis(5000);
     /**
      * Interval to send a keep-alive message.
      * @see java.net.Socket#setSoTimeout(int)
      */
-    private int serverAliveInterval = 30000;
+    private Duration serverAliveInterval = Duration.ofMillis(30000);
     /**
      * SSH kex algorithms.
      */
@@ -129,12 +130,53 @@ public class ClientProperties {
         this.password = password;
     }
 
+    public Duration getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(Duration connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    public Duration getChannelConnectTimeout() {
+        return channelConnectTimeout;
+    }
+
+    public void setChannelConnectTimeout(Duration channelConnectTimeout) {
+        this.channelConnectTimeout = channelConnectTimeout;
+    }
+
+    public Duration getServerAliveInterval() {
+        return serverAliveInterval;
+    }
+
+    public void setServerAliveInterval(Duration serverAliveInterval) {
+        this.serverAliveInterval = serverAliveInterval;
+    }
+
     public String getKex() {
         return kex;
     }
 
     public void setKex(String kex) {
         this.kex = kex;
+    }
+
+    public boolean isEnabledLog() {
+        return enabledLog;
+    }
+
+    public void setEnabledLog(boolean enabledLog) {
+        this.enabledLog = enabledLog;
+        JSch.setLogger(new JschLogger(enabledLog));
+    }
+
+    public Map<String, Object> getExtensions() {
+        return extensions;
+    }
+
+    public void setExtensions(Map<String, Object> extensions) {
+        this.extensions = extensions;
     }
 
     @Override
@@ -155,44 +197,4 @@ public class ClientProperties {
                 .toString();
     }
 
-    public boolean isEnabledLog() {
-        return enabledLog;
-    }
-
-    public void setEnabledLog(boolean enabledLog) {
-        this.enabledLog = enabledLog;
-        JSch.setLogger(new JschLogger(enabledLog));
-    }
-
-    public int getConnectTimeout() {
-        return connectTimeout;
-    }
-
-    public void setConnectTimeout(int connectTimeout) {
-        this.connectTimeout = connectTimeout;
-    }
-
-    public Map<String, Object> getExtensions() {
-        return extensions;
-    }
-
-    public void setExtensions(Map<String, Object> extensions) {
-        this.extensions = extensions;
-    }
-
-    public int getChannelConnectTimeout() {
-        return channelConnectTimeout;
-    }
-
-    public void setChannelConnectTimeout(int channelConnectTimeout) {
-        this.channelConnectTimeout = channelConnectTimeout;
-    }
-
-    public int getServerAliveInterval() {
-        return serverAliveInterval;
-    }
-
-    public void setServerAliveInterval(int serverAliveInterval) {
-        this.serverAliveInterval = serverAliveInterval;
-    }
 }

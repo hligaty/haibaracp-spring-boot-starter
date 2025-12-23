@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 hligaty
+ * Copyright 2021-2025 hligaty
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package io.github.hligaty.haibaracp.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.time.Duration;
 import java.util.StringJoiner;
 
 /**
@@ -57,7 +58,7 @@ public class PoolProperties {
      * exception when the pool is exhausted. Use a negative value to block
      * indefinitely.
      */
-    private long maxWait = -1;
+    private Duration maxWait = Duration.ofMillis(-1);
 
     /**
      * Whether objects borrowed from the pool will be validated. Validation is
@@ -87,14 +88,14 @@ public class PoolProperties {
      * Time between runs of the idle object evictor thread. When positive, the idle
      * object evictor thread starts, otherwise no idle object eviction is performed.
      */
-    private long timeBetweenEvictionRuns = 1000L * 60L * 10L;
+    private Duration timeBetweenEvictionRuns = Duration.ofMillis(1000L * 60L * 10L);
 
     /**
      * Returns the minimum amount of time an object may sit idle in the pool before
      * it is eligible for eviction by the idle object evictor. When non-positive,
      * no objects will be evicted from the pool due to idle time alone.
      */
-    private long minEvictableIdleTimeMillis = 1000L * 60L * 30L;
+    private Duration minEvictableIdleTimeMillis = Duration.ofMillis(1000L * 60L * 30L);
 
     public Boolean getEnabled() {
         return enabled;
@@ -128,11 +129,11 @@ public class PoolProperties {
         this.maxActive = maxActive;
     }
 
-    public long getMaxWait() {
+    public Duration getMaxWait() {
         return maxWait;
     }
 
-    public void setMaxWait(long maxWait) {
+    public void setMaxWait(Duration maxWait) {
         this.maxWait = maxWait;
     }
 
@@ -160,19 +161,19 @@ public class PoolProperties {
         this.testWhileIdle = testWhileIdle;
     }
 
-    public long getTimeBetweenEvictionRuns() {
+    public Duration getTimeBetweenEvictionRuns() {
         return timeBetweenEvictionRuns;
     }
 
-    public void setTimeBetweenEvictionRuns(long timeBetweenEvictionRuns) {
+    public void setTimeBetweenEvictionRuns(Duration timeBetweenEvictionRuns) {
         this.timeBetweenEvictionRuns = timeBetweenEvictionRuns;
     }
 
-    public long getMinEvictableIdleTimeMillis() {
+    public Duration getMinEvictableIdleTimeMillis() {
         return minEvictableIdleTimeMillis;
     }
 
-    public void setMinEvictableIdleTimeMillis(long minEvictableIdleTimeMillis) {
+    public void setMinEvictableIdleTimeMillis(Duration minEvictableIdleTimeMillis) {
         this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
     }
 
