@@ -41,7 +41,7 @@ public interface SftpSessionProvider {
     SftpSession getSftpClient();
 
     /**
-     * Release the {@link SftpSession sftpSession}. Closes session {@link SftpSession##release(SftpSession)} by default.
+     * Release the {@link SftpSession sftpSession}. Closes session {@link SftpSession#disconnect()} by default.
      * Implementations may choose whether they override this method and return the session to a pool.
      *
      * @param sftpSession must not be {@literal null}.
