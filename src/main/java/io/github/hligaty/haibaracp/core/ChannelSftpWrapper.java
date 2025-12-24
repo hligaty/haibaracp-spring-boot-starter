@@ -168,9 +168,8 @@ public class ChannelSftpWrapper {
      * @see SftpTemplate#upload(String, String)
      */
     public void upload(String from, String to) throws SftpException {
-        prepareUpload(to);
         try {
-            channelSftp.put(from, to.substring(to.lastIndexOf(separatorChar) + 1));
+            channelSftp.put(from, to);
         } catch (SftpException e) {
             throw new SftpException(e.id, "Cannot put for file '" + from + "'", e);
         }
@@ -180,18 +179,10 @@ public class ChannelSftpWrapper {
      * @see SftpTemplate#upload(InputStream, String)
      */
     public void upload(InputStream from, String to) throws SftpException {
-        prepareUpload(to);
         try {
-            channelSftp.put(from, to.substring(to.lastIndexOf(separatorChar) + 1));
+            channelSftp.put(from, to);
         } catch (SftpException e) {
             throw new SftpException(e.id, "Cannot put for file '" + from + "'", e);
-        }
-    }
-
-    private void prepareUpload(String to) throws SftpException {
-        String dir = to.substring(0, to.lastIndexOf(separatorChar) + 1);
-        if (!dir.isEmpty()) {
-            cdAndMkdir(dir);
         }
     }
 

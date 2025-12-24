@@ -143,7 +143,7 @@ public class SftpTemplate<S extends SftpSession> {
     }
 
     /**
-     * Upload file. Create recursively when remote directory does not exist.
+     * Upload file.
      *
      * @param from the path to the local file.
      * @param to   the path to the remote file.
@@ -156,7 +156,7 @@ public class SftpTemplate<S extends SftpSession> {
     }
 
     /**
-     * Upload file. Create recursively when remote directory does not exist.
+     * Upload file.
      *
      * @param from the inputStream to the local file.
      * @param to   the path to the remote file.
