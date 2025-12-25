@@ -3,7 +3,7 @@
 # HaibaraCP
 
 <p align="center">
-<a href="https://openjdk.java.net/"><img src="https://img.shields.io/badge/JDK-8+-green?logo=java&amp;logoColor=white"></a>
+<a href="https://openjdk.java.net/"><img src="https://img.shields.io/badge/JDK-17+-green?logo=java&amp;logoColor=white"></a>
 <a href="https://github.com/hligaty/haibaracp-spring-boot-starter/blob/master/LICENSE"><img src="https://img.shields.io/github/license/hligaty/haibaracp-spring-boot-starter"></a>
 <a href="https://api.github.com/repos/hligaty/haibaracp-spring-boot-starter/releases/latest"><img src="https://img.shields.io/github/v/release/hligaty/haibaracp-spring-boot-starter"></a>
 <a href="https://github.com/hligaty/haibaracp-spring-boot-starter/stargazers"><img src="https://img.shields.io/github/stars/hligaty/haibaracp-spring-boot-starter"></a>
@@ -19,14 +19,15 @@
 
 ## 介绍
 
-HaibaraCP 是一个 SFTP 的 SpringBoot Starter，支持密码和密钥登录以及多个 Host 连接，并提供和 RedisTemplate 一样优雅的 SftpTemplate。SFTP 通过 SSH 建立连接，而 SSH 连接数默认是有限的，10 个以外的连接将有 30 % 的概率连接失败，当超过 100 个连接时将拒绝创建新连接，因此要避免频繁创建新连接。
+HaibaraCP 是一个 SFTP 的 SpringBoot Starter，提供和 RedisTemplate 一样优雅的 SftpTemplate。SFTP 通过 SSH 建立连接，而 SSH 连接数默认是有限的，10 个以外的连接将有 30 % 的概率连接失败，当超过 100 个连接时将拒绝创建新连接，因此要避免频繁创建新连接。
 
 ## Maven 依赖
 
 | spring boot version | haibaracp |
-| :-----------------: |:---------:|
+| :-----------------: | :-------: |
 |        2.x.x        |   1.3.2   |
 |        3.x.x        |   2.1.2   |
+|        4.x.x        |   3.0.0   |
 
 依赖 Apache commons-pool2：
 
@@ -34,7 +35,7 @@ HaibaraCP 是一个 SFTP 的 SpringBoot Starter，支持密码和密钥登录以
 <dependency>
     <groupId>io.github.hligaty</groupId>
     <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>x.x.x</version>
+    <version>3.0.0</version>
 </dependency>
 <dependency>
     <groupId>org.apache.commons</groupId>
@@ -55,6 +56,9 @@ sftp:
   port: 22
   username: root
   password: 123456
+  connect-timeout: 5000ms
+  channel-connect-timeout: 5000ms
+  server-alive-interval: 30000ms
   kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
 ```
 ### 密钥登录
@@ -76,6 +80,7 @@ sftp:
 ```yml
 sftp:
   pool:
+    enabled: true
     min-idle: 1
     max-idle: 8
     max-active: 8
@@ -114,7 +119,7 @@ public class XXXService {
 
 ### upload
 
-上传文件，该方法会递归创建上传的远程文件所在的父目录。
+上传文件。**注意：3.0.0 版本移除了自动创建父目录的功能，请确保目标路径的父目录已存在。**
 
 ```java
 // 上传 D:\\aptx4869.docx 到 /home/haibara/aptx4869.docx
@@ -189,6 +194,20 @@ try (OutputStream outputStream = Files.newOutputStream(Paths.get("/root/aptx4869
 }
 ```
 
+## 健康检查
+
+HaibaraCP 实现了 Spring Boot Actuator 的健康指标。你可以通过暴露 `sftp` 指标来查看 SFTP 的连接状态。
+
+```yml
+management:
+  endpoint:
+    health:
+      show-details: always
+  health:
+    sftp:
+      enabled: true
+```
+
 ## SftpSessionFactory
 
 用于创建 SftpSession 的工厂，在需要自定义创建 Jsch Session 或扩展 SftpSession功能时你会使用到它，比如：
@@ -244,48 +263,11 @@ sftpTemplate.executeSessionWithoutResult(sftpSession -> {
 
 ## 密钥格式
 
-OpenSSH 自 7.8 起，默认的密钥格式由
+OpenSSH 自 7.8 起，默认的密钥格式变更为新的格式。
 
-```
------BEGIN RSA PRIVATE KEY-----
-xxx
------END RSA PRIVATE KEY-----
-```
+Haibaracp 默认使用 `com.github.mwiede:jsch` 作为 SFTP 的实现，它支持新的 OpenSSH 密钥格式以及更多的加密算法。你不再需要像使用旧版 JSch (com.jcraft:jsch) 那样手动执行 PEM 格式转换或寻找替代库。
 
-变更为：
-
-```
------BEGIN OPENSSH PRIVATE KEY-----
-xxx
------END OPENSSH PRIVATE KEY-----
-```
-
-Haibaracp 使用 Jsch 作为 SFTP 的实现，而 Jsch 不支持新的格式，因此你需要一些小改动：
-
-1. 如果密钥由你生成，仅需在 `ssh-keygen` 命令后加上 `-m PEM` 以生成旧版的密钥继续使用。
-2. 如果你无法自己获取旧版密钥，此时必须更改 POM，将 Jcraft 的 Jsch 更改为其他人 fork 的 Jsch 库（Jcraft 自 2018 年推送的 0.1.55 版本后没有任何的消息），比如：
-
-```xml
-<dependency>
-    <groupId>io.github.hligaty</groupId>
-    <artifactId>haibaracp-spring-boot-starter</artifactId>
-    <version>x.x.x</version>
-    <exclusions>
-        <exclusion>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-
-<dependency>
-    <groupId>com.github.mwiede</groupId>
-    <artifactId>jsch</artifactId>
-    <version>0.1.72</version>
-</dependency>
-```
-
-否则你将看到 [JSchException: invalid privatekey](https://github.com/mwiede/jsch/issues/12#issuecomment-662863338)。
+如果你仍然遇到 [JSchException: invalid privatekey](https://github.com/mwiede/jsch/issues/12#issuecomment-662863338)，请检查密钥路径是否正确或密钥是否受损。
 
 ## 变更记录
 
