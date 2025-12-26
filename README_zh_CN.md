@@ -11,12 +11,6 @@
 <a href="https://github.com/hligaty/haibaracp-spring-boot-starter/issues?q=is%3Aissue+is%3Aclosed"><img src="https://img.shields.io/github/issues-closed-raw/hligaty/haibaracp-spring-boot-starter"></a>
 </p>
 
-> **Github：[hligaty/haibaracp-spring-boot-starter: SFTP Connect Pool (github.com)](https://github.com/hligaty/haibaracp-spring-boot-starter)**
-
-> **Gitee：[haibaracp-spring-boot-starter: SFTP Connect Pool (gitee.com)](https://gitee.com/hligy/haibaracp-spring-boot-starter)**
-
-> **欢迎使用和Star支持，如使用过程中碰到问题，可以提出Issue，我会尽力完善**
-
 ## 介绍
 
 HaibaraCP 是一个 SFTP 的 SpringBoot Starter，提供和 RedisTemplate 一样优雅的 SftpTemplate。SFTP 通过 SSH 建立连接，而 SSH 连接数默认是有限的，10 个以外的连接将有 30 % 的概率连接失败，当超过 100 个连接时将拒绝创建新连接，因此要避免频繁创建新连接。
