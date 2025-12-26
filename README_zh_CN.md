@@ -2,7 +2,7 @@
 
 # HaibaraCP
 
-<p align="center">
+<p>
 <a href="https://openjdk.java.net/"><img src="https://img.shields.io/badge/JDK-17+-green?logo=java&amp;logoColor=white"></a>
 <a href="https://github.com/hligaty/haibaracp-spring-boot-starter/blob/master/LICENSE"><img src="https://img.shields.io/github/license/hligaty/haibaracp-spring-boot-starter"></a>
 <a href="https://api.github.com/repos/hligaty/haibaracp-spring-boot-starter/releases/latest"><img src="https://img.shields.io/github/v/release/hligaty/haibaracp-spring-boot-starter"></a>
